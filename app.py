@@ -10,6 +10,7 @@ db=mysql.connector.connect(
 	database="Taipei_Day_Trip"
 )
 
+
 mycursor=db.cursor()
 
 app=FastAPI()
