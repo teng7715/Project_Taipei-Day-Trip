@@ -5,7 +5,7 @@ import os
 
 db=mysql.connector.connect(
 	user="root",
-	password=os.getenv("MYSQL_PASSWORD"),
+	password=os.getenv("MYSQL_PASSWORD"), 
 	host="localhost",
 	database="Taipei_Day_Trip"
 )
@@ -39,9 +39,9 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 
 		#先處理圖片URL的資料，再跑判斷式，因為無論有沒有keyword查詢，都需要用到
 		mycursor.execute("select attraction.id,url.image from url inner join attraction on attraction.id=url.attraction_id order by attraction.id")
-		image_datas=mycursor.fetchall() 			#裡面的資料是 [(1,'https:000848.jpg'),....]
+		image_datas=mycursor.fetchall() #裡面的資料是 [(1,'https:000848.jpg'),....]
 
-		image_grouped_data={}  						#裡面的資料，經過下面的迴圈後，會是{"1": ["https:...","https:..."], "2": ["https:...","https:..."]...}
+		image_grouped_data={}  #裡面的資料，經過下面的迴圈後，會是{"1": ["https:...","https:..."], "2": ["https:...","https:..."]...}
 
 		for key,url in image_datas:
 			if key not in image_grouped_data:
@@ -53,21 +53,21 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 		if keyword==None or keyword=="":  #如果今天只需要針對頁碼做搜尋
 
 			mycursor.execute("select attraction.id,attraction.name,attraction.category,attraction.description,attraction.address,attraction.transport,station.mrt,attraction.lat,attraction.lng from attraction inner join station on attraction.station_id=station.id order by attraction.id limit %s,12",(offset,))
-			attraction_datas=mycursor.fetchall() 							#裡面的資料是[(1, '新北投溫泉區', '養生溫泉'...),(2, '大稻埕碼頭',...)...]
+			attraction_datas=mycursor.fetchall() 	#裡面的資料是[(1, '新北投溫泉區', '養生溫泉'...),(2, '大稻埕碼頭',...)...]
 			attraction_datas_list=[list(data) for data in attraction_datas] #attraction_datas裡面的資料需要轉換成list格式，我們才能在裡面新增資料，加上他們的景點照片
 
 
-			column_names=[desc[0] for desc in mycursor.description] 		#裡面的資料是['id', 'name', 'category', 'description', ...] 
+			column_names=[desc[0] for desc in mycursor.description] #裡面的資料是['id', 'name', 'category', 'description', ...] 
 			column_names.append("images")
 
 
-			for attraction in attraction_datas_list:  						#用迴圈，在每個景點列表的最後方，加上他的景點照片資料
+			for attraction in attraction_datas_list:  #用迴圈，在每個景點列表的最後方，加上他的景點照片資料
 				attraction.append(image_grouped_data[attraction[0]])
 			
 			cleaned_data=[dict(zip(column_names,attraction)) for attraction in attraction_datas_list]
 			
 			mycursor.execute("select count(id) from attraction")
-			attraction_count=mycursor.fetchone()[0] 						#印出來的會是Tuple-->(58,)這種形式，所以需要[0]
+			attraction_count=mycursor.fetchone()[0] #印出來的會是Tuple-->(58,)這種形式，所以需要[0]
 	
 
 		else:  #如果今天想要搜尋keyword
@@ -115,10 +115,18 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 
 @app.get("/api/attraction/{attractionId}")
 async def get_attraction(request:Request,attractionId:int):
-  
-	if attractionId <=0:
-			return JSONResponse(content={"error":True,"message":"景點編號查詢請輸入正整數！"},status_code=400)
+
 	try:
+		mycursor.execute("select id from attraction")
+		attractions_id=mycursor.fetchall()
+		attractions_id_list=[ id[0] for id in attractions_id]
+
+		if attractionId > len(attractions_id_list):
+			return JSONResponse(content={"error":True,"message":"查無此景點喔！"},status_code=400)
+
+		if attractionId not in attractions_id_list:
+			return JSONResponse(content={"error":True,"message":"景點編號查詢請輸入正整數！"},status_code=400)
+
 		mycursor.execute("select attraction.id,attraction.name,attraction.category,attraction.description,attraction.address,attraction.transport,station.mrt,attraction.lat,attraction.lng from attraction inner join station on attraction.station_id=station.id where attraction.id=%s",(attractionId,))
 		attraction_datas_list=list(mycursor.fetchone())
 
