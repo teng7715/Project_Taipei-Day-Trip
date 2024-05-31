@@ -102,7 +102,7 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 			"data":cleaned_data
 		}
 
-		return JSONResponse(content=success_response,status_code=200)
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
 		
 
 	except Exception as e:
@@ -110,7 +110,7 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 			"error":True,
 			"message":str(e)
 		}
-		return JSONResponse(content=error_response,status_code=500)
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
 
 @app.get("/api/attraction/{attractionId}")
@@ -122,10 +122,10 @@ async def get_attraction(request:Request,attractionId:int):
 		attractions_id_list=[ id[0] for id in attractions_id]
 
 		if attractionId > len(attractions_id_list):
-			return JSONResponse(content={"error":True,"message":"查無此景點喔！"},status_code=400)
+			return JSONResponse(content={"error":True,"message":"查無此景點喔！"},status_code=400,media_type="application/json; charset=utf-8")
 
 		if attractionId not in attractions_id_list:
-			return JSONResponse(content={"error":True,"message":"景點編號查詢請輸入正整數！"},status_code=400)
+			return JSONResponse(content={"error":True,"message":"景點編號查詢請輸入正整數！"},status_code=400,media_type="application/json; charset=utf-8")
 
 		mycursor.execute("select attraction.id,attraction.name,attraction.category,attraction.description,attraction.address,attraction.transport,station.mrt,attraction.lat,attraction.lng from attraction inner join station on attraction.station_id=station.id where attraction.id=%s",(attractionId,))
 		attraction_datas_list=list(mycursor.fetchone())
@@ -145,14 +145,14 @@ async def get_attraction(request:Request,attractionId:int):
 			"data":cleaned_data
 		}
 
-		return JSONResponse(content=success_response,status_code=200)
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
 
 	except Exception as e:
 		error_response={
 			"error":True,
 			"message":str(e)
 		}
-		return JSONResponse(content=error_response,status_code=500)
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
 
 @app.get("/api/mrts") 
@@ -167,12 +167,12 @@ async def get_mrts(request:Request):
 		success_response={
 			"data":cleaned_data
 		}
-		return JSONResponse(content=success_response,status_code=200)
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
 
 	except Exception as e:
 		error_response={
 			"error":True,
 			"message":str(e)
 		}
-		return JSONResponse(content=error_response,status_code=500)
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 	
