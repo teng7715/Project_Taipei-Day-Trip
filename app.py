@@ -1,11 +1,11 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 import mysql.connector
-
+import os
 
 db=mysql.connector.connect(
 	user="root",
-	password="123456787654321",
+	password=os.getenv("MYSQL_PASSWORD"),
 	host="localhost",
 	database="Taipei_Day_Trip"
 )
