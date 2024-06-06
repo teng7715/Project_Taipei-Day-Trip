@@ -1,7 +1,9 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
+from starlette.middleware.cors import CORSMiddleware
 import mysql.connector
 import os
+
 
 db=mysql.connector.connect(
 	user="root",
@@ -15,6 +17,11 @@ mycursor=db.cursor()
 
 app=FastAPI()
 
+##這邊同源政策的設定，到時候真的上線，要再改一下！
+app.add_middleware(CORSMiddleware,
+    allow_origins=["*"],
+    allow_headers=["*"],
+)
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -89,12 +96,29 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 			attraction_count=mycursor.fetchone()[0]
 
 
-		page_num=attraction_count//12 #以總景點58為例，計算後會是4，表示page0.1.2.3頁時，nextPage都要有數字
+		# page 0 是1-12    			limit 0,12 -->略過0筆資料後，取出12筆 
+		# page 1 是13-24   			limit 12,12 -->略過12筆資料後，取出12筆
+		# page 2 是25-36   			limit 24,12 -->略過24筆資料後，取出12筆
+		# page 3 是37-48   			limit 36,12 -->略過36筆資料後，取出12筆
+		# page 4 是49-58 (不滿12筆)  limit 48,12 -->略過48筆資料後，取出12筆(但有不滿12筆的問題嗚嗚--->好像沒差？他就是取出10筆資料)
+		# page 5 NONO資料沒這麼多筆   limit 60,12 -->略過60筆資料後，取出12筆-->SQL撈出上也不會怎樣或異常，他只是會跟你說沒資料，所以也沒東西給你而已
 
-		if page < page_num:
-			next_page=page+1
+		
+		if attraction_count%12==0: #如果景點數量能被12整除 EX:景點有48個，除12=4，其實在page3時，next_page就要是None了
+
+			page_num=attraction_count/12-1
+			if page < page_num:
+				next_page=page+1
+			else:
+				next_page=None 
+		
 		else:
-			next_page=None 
+			page_num=attraction_count//12 #如果景點數量不能被12整除，以58為例，計算後會是4，表示page0.1.2.3頁時，nextPage都要有數字
+
+			if page < page_num:
+				next_page=page+1
+			else:
+				next_page=None 
 		
 
 		success_response={
