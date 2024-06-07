@@ -35,9 +35,10 @@ let start_search=()=> {
             //好讓我們針對搜尋建立新的觀察，避免像當初卡住的地方一樣，都搜尋了，首頁的資料還是一直跑出來
             //也清空紀錄已載入頁面的陣列資料
             current_observer.disconnect();
-            let clean_pages=[];
 
-            set_current_observer(null,clean_pages);
+            // let clean_pages=[];
+
+            set_current_observer(null);
         }
 
         get_attractions(0,keyword);

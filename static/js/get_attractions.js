@@ -1,8 +1,10 @@
 let main_layout=document.querySelector(".main_layout");
 let detection_point=document.querySelector(".detection_point");
 
+
 let current_observer=null; //儲存目前的觀察者實例
-let loading_pages=[]; //將已載入的頁面放入陣列中，避免重複載入的狀況發生
+
+
 
 //函式：能用來創建各種標籤節點
 let create_and_append=(parent,tag,className,text)=>{ 
@@ -54,7 +56,7 @@ let create_attraction_section=(data)=>{
 }
 
 
-// 函式：用來建立連線+將下一頁資料（無論有還沒有）傳送出去
+// 函式：用來建立連線＆如果有下一頁，將下一頁頁碼傳送出去
 let get_attractions=(page,keyword="")=>{ 
 
     fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
@@ -63,45 +65,54 @@ let get_attractions=(page,keyword="")=>{
         else {throw new Error("API request failed")}
     })
     .then(data => {
+
+        if (current_observer){
+            current_observer.disconnect(); 
+            //載入資料前，以防萬一我們都先清空所有觀察點，避免EX:首頁有觀察點，但我自己搜尋又建立一個觀察點（當初卡住的地方）
+            
+            // 邏輯釐清：
+            // 載入點目前的狀態是『載入第二頁』，OK去執行了，載入點也應該要轉換成『載入第三頁』，但因為我們高速轉動頁，導致這個載入點轉換前又被我們碰到
+            // 第二頁因此重複加載，所以1.載入點轉換成正確頁面前，載入點都要失效 
+        }
+
+        //觀察點清空後，渲染資料
         if (data.data.length>0){
             create_attraction_section(data);
-            handle_nextPage(data.nextPage,keyword);
         }
+
+        if (data.nextPage !==null){
+            handle_nextPage(data.nextPage,keyword); 
+        }
+
     })
     .catch(error => {console.error(error)})
 }
 
 
 
-//函式：用來判斷是否有下一頁資料，因此需要建立觀察點的觀察事件，以及如果與觀察點接觸，我們要再去連線取得下一頁資料
+//函式：有下一頁資料才會呼叫此函式，建立載入觀察點。如果載入觀察點被接觸，我們要再去連線取得下一頁資料
 let handle_nextPage=(nextPage,keyword)=>{
-   
-    if (current_observer){
-            current_observer.disconnect(); 
-            //無論有沒有下一頁，以防萬一我們都先清空所有觀察點，避免EX:首頁有觀察點，但我自己搜尋又建立一個觀察點（當初卡住的地方）
-            //清空後下面才去依照狀況看是否要建立新的觀察點
-    }
 
-    let check_loading=loading_pages.includes(nextPage); //確認此頁面是否已載入過，如果沒有，才去建立監聽事件
+    current_observer=new IntersectionObserver((entries) => { //page0時，觀察點會在『載入第一頁』的狀態，page1時，觀察點會在『載入第二頁』的狀態
+        entries.forEach(entry => {
+            if (entry.isIntersecting){   
+                
+                current_observer.unobserve(detection_point); // 雖然確定接觸到了，但在載入資料前，先刪除所有接觸點
+                current_observer.disconnect()   
+                // EX:page0時，觀察點會在『載入第一頁』的狀態，雖然確定接觸到了，但在載入第一頁資料前就先刪掉接觸點，好避免先載入資料
+                
+                get_attractions(nextPage,keyword);
 
-    if (nextPage !==null){ //如果nextPage，不是空值，也就是有下一頁，我們才建立監聽事件
-        current_observer=new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !check_loading){
-                    loading_pages.push(nextPage);
-                    get_attractions(nextPage,keyword);
-                }
-            })
+            }
         })
+    })
     current_observer.observe(detection_point);
-    }
 }
 
 
 //函式：為了將使用者搜尋/或點捷運站navbar時，重新清空觀察點＋清空紀錄已載入頁面的陣列，所以建立一個能讓search.js改變變數值函式
-let set_current_observer=(observer,clean_pages) => {
+let set_current_observer=(observer) => {
     current_observer=observer;
-    loading_pages=clean_pages;
 }
 
 
