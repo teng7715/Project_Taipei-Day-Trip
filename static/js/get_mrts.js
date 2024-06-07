@@ -1,6 +1,3 @@
-//http://44.230.128.247:8000/api/mrts
-//http://127.0.0.1:8000/api/mrts
-
 import {mrt_search} from "./search.js"
 
 let left_arrow=document.querySelector("#left_arrow");
@@ -11,7 +8,7 @@ let offset=0;
 
 
 //連線取得捷運站景點資訊
-fetch("http://44.230.128.247:8000/api/mrts")
+fetch("/api/mrts")
 .then(response => {
     if (response.ok){return response.json()}
     else {throw new Error("API request failed")}

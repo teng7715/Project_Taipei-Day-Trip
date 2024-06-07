@@ -13,7 +13,6 @@ let mrt_search=(event)=>{
 
     //呼叫搜尋功能
     start_search();
-
 }
 
 
@@ -21,6 +20,7 @@ let mrt_search=(event)=>{
 let start_search=()=> {
 
     let keyword=search.value;
+
 
     if (keyword){
 
@@ -33,8 +33,11 @@ let start_search=()=> {
         if(current_observer){ 
             //再來清空當初的觀察者實例->如果觀察者實例當中有資料，也就是他有在針對某個東西做偵測時，把他偵測的狀態移除
             //好讓我們針對搜尋建立新的觀察，避免像當初卡住的地方一樣，都搜尋了，首頁的資料還是一直跑出來
+            //也清空紀錄已載入頁面的陣列資料
             current_observer.disconnect();
-            set_current_observer(null);
+            let clean_pages=[];
+
+            set_current_observer(null,clean_pages);
         }
 
         get_attractions(0,keyword);

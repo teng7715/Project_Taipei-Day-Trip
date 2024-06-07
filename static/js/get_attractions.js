@@ -2,7 +2,7 @@ let main_layout=document.querySelector(".main_layout");
 let detection_point=document.querySelector(".detection_point");
 
 let current_observer=null; //儲存目前的觀察者實例
-
+let loading_pages=[]; //將已載入的頁面放入陣列中，避免重複載入的狀況發生
 
 //函式：能用來創建各種標籤節點
 let create_and_append=(parent,tag,className,text)=>{ 
@@ -57,7 +57,7 @@ let create_attraction_section=(data)=>{
 // 函式：用來建立連線+將下一頁資料（無論有還沒有）傳送出去
 let get_attractions=(page,keyword="")=>{ 
 
-    fetch(`http://44.230.128.247:8000/api/attractions?page=${page}&keyword=${keyword}`)
+    fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
     .then(response => {
         if (response.ok){return response.json()}
         else {throw new Error("API request failed")}
@@ -72,6 +72,7 @@ let get_attractions=(page,keyword="")=>{
 }
 
 
+
 //函式：用來判斷是否有下一頁資料，因此需要建立觀察點的觀察事件，以及如果與觀察點接觸，我們要再去連線取得下一頁資料
 let handle_nextPage=(nextPage,keyword)=>{
    
@@ -81,11 +82,14 @@ let handle_nextPage=(nextPage,keyword)=>{
             //清空後下面才去依照狀況看是否要建立新的觀察點
     }
 
+    let check_loading=loading_pages.includes(nextPage); //確認此頁面是否已載入過，如果沒有，才去建立監聽事件
+
     if (nextPage !==null){ //如果nextPage，不是空值，也就是有下一頁，我們才建立監聽事件
         current_observer=new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting){
-                    get_attractions(nextPage,keyword)
+                if (entry.isIntersecting && !check_loading){
+                    loading_pages.push(nextPage);
+                    get_attractions(nextPage,keyword);
                 }
             })
         })
@@ -94,9 +98,10 @@ let handle_nextPage=(nextPage,keyword)=>{
 }
 
 
-//函式：為了將使用者搜尋/或點捷運站navbar時，重新清空觀察點，所以建立一個能讓search.js改變變數值函式
-let set_current_observer=(observer) => {
+//函式：為了將使用者搜尋/或點捷運站navbar時，重新清空觀察點＋清空紀錄已載入頁面的陣列，所以建立一個能讓search.js改變變數值函式
+let set_current_observer=(observer,clean_pages) => {
     current_observer=observer;
+    loading_pages=clean_pages;
 }
 
 
