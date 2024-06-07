@@ -1,27 +1,33 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import mysql.connector
+from mysql.connector import pooling
 import os
 
 
-db=mysql.connector.connect(
-	user="root",
-	password=os.getenv("MYSQL_PASSWORD"), 
-	host="localhost",
-	database="Taipei_Day_Trip"
+app=FastAPI()
+app.mount("/static",StaticFiles(directory="static"),name="static")
+
+
+config={
+    'user':"root",
+    'password': os.getenv("MYSQL_PASSWORD"),
+    'host':"localhost",
+    'database':"Taipei_Day_Trip",
+    'raise_on_warnings': True
+}
+
+cnxpool=pooling.MySQLConnectionPool(
+	pool_name="mypool",
+	pool_size=5,
+	**config
 )
 
+db=cnxpool.get_connection()
 
 mycursor=db.cursor()
 
-app=FastAPI()
-
-##這邊同源政策的設定，到時候真的上線，要再改一下！
-app.add_middleware(CORSMiddleware,
-    allow_origins=["*"],
-    allow_headers=["*"],
-)
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)

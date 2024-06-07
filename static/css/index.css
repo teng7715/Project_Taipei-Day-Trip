@@ -5,7 +5,13 @@
 
 /*以下是header1的相關設定*/
 
-.header1{
+.header1_area{
+    width: 100%;
+    height: 54px;
+    background-color: #FFFFFF;
+}
+
+.header1_for_fixed{
     width: 100%;
     background-color: #FFFFFF;
     position: fixed;
@@ -30,6 +36,8 @@
     font-size: 30px;
     font-weight: bold;
     color:#448899;
+
+    text-decoration: none;
 }
 
 .header1_layout > nav{
@@ -124,6 +132,7 @@
 .header2_content-input::placeholder{
     font-size: 16px;
     font-weight: bold;
+    color: #757575;
 }
 
 .header2_content-search > button{
@@ -165,9 +174,19 @@
     background: none;
     border: none;
     cursor: pointer;
-    width: 32px;
-    height: 32px;
+    width: 47px;
+    height: 50px;
     opacity: 0.5;
+}
+
+#left_arrow{
+    padding: 9px 0px 9px 15px;
+    box-sizing: border-box;
+}
+
+#right_arrow{
+    padding: 9px 15px 9px 0px;
+    box-sizing: border-box;
 }
 
 .navbar_button:hover{
@@ -178,7 +197,6 @@
     overflow: hidden; /* 這段筆記要記得補起來，反正就是自動隱藏超出的文字或圖片 */
     padding: 0px 10px;
 }
-
 
 .navbar_list{
     display: flex;
@@ -202,7 +220,6 @@
 
 /*以下是景點區塊的相關設定*/
 
-/*測試區哈哈哈*/
 .section_sheard{
     width: 1200px;
     margin-inline: auto;
@@ -219,7 +236,6 @@
     grid-template: 1fr / 1fr 1fr 1fr 1fr;
 }
 
-
 .section_layout_for_one_to_eight{
     height: 544px;
     grid-template: 1fr 1fr / 1fr 1fr 1fr 1fr;
@@ -229,28 +245,8 @@
     height: 816px;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr 1fr;
 }
-/*測試區哈哈哈*/
 
-
-
-
-/*原本3*4的設定，如果玩壞了記得復原*/
-/* .section_layout{
-    width: 1200px;
-    height: 816px;
-    margin-inline: auto;
-
-    box-sizing: border-box;
-    padding: 15px;
-
-
-    /*到時候刪掉？？*/
-    /* display: grid;
-    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr 1fr;
-    gap:30px; */
-/* } */ 
-
-article{
+article{ 
     border: #E8E8E8 1px solid;
     border-radius: 5px;
     box-sizing: border-box;
@@ -286,7 +282,6 @@ figcaption{
     /*這跟我上面那樣寫差在哪裡，感覺後續需要理解一下*/
     /* background-color: #000000;
     opacity: 0.6; */
-
 }
 
 .attraction_name{
@@ -299,7 +294,7 @@ figcaption{
 
     white-space: nowrap;
     overflow: hidden;
-     text-overflow: ellipsis; /* 這三個拿來隱藏字的CSS記得也要好好做筆記 */
+    text-overflow: ellipsis; /* 這三個拿來隱藏字的CSS記得也要好好做筆記 */
 }
 
 /**/
@@ -333,3 +328,94 @@ footer > div{
 }
 
 
+@media(max-width:1200px){
+
+/*以下是header1的相關設定*/
+
+.header1_layout{
+    width: 100%;
+}
+
+.website_name{
+    padding: 10px;
+}
+
+/*以下是header2，的相關設定*/
+
+.header2_content-layout{
+    width: 100%;
+    padding-inline: 10px;
+    box-sizing: border-box;
+}
+
+.header2_content-input{
+    width: 300px; 
+}
+
+/*以下是mrt navbar，的相關設定*/
+
+.navbar_layout{
+    width: 600px;
+}
+
+/*以下是景點區塊的相關設定*/
+
+.section_sheard{
+    width: 600px;
+
+}
+
+.section_layout_for_one_to_eight,
+.section_layout_for_one_to_four,
+.section_layout_for_one_to_twelve{
+    height: 100%;
+    grid-template: 1fr 1fr / 1fr 1fr;
+}
+}
+
+
+@media(max-width:600px){
+
+/*以下是header2，的相關設定*/
+
+.header2_background_image{
+    object-position:left top; 
+}
+
+.header2_content-input{
+    width: 255px;
+}
+
+/*以下是mrt navbar，的相關設定*/
+
+.navbar_layout{
+    width: 360px;
+}
+
+/*以下是景點區塊的相關設定*/
+
+.section_sheard{
+    width: 352px;
+    gap:15px;
+}
+
+.section_layout_for_one_to_eight,
+.section_layout_for_one_to_four,
+.section_layout_for_one_to_twelve{
+    height: 100%;
+    grid-template: 1fr / 1fr;
+}
+
+article{
+    width: 322px;
+    height: 280px;
+}
+
+.name_and_image_layout{
+    height: 235px;
+}
+
+.station_and_category{
+    width: 100%;
+}
+}
