@@ -1,10 +1,7 @@
 let main_layout=document.querySelector(".main_layout");
 let detection_point=document.querySelector(".detection_point");
 
-
 let current_observer=null; //儲存目前的觀察者實例
-
-
 
 //函式：能用來創建各種標籤節點
 let create_and_append=(parent,tag,className,text)=>{ 
@@ -71,8 +68,9 @@ let get_attractions=(page,keyword="")=>{
             //載入資料前，以防萬一我們都先清空所有觀察點，避免EX:首頁有觀察點，但我自己搜尋又建立一個觀察點（當初卡住的地方）
             
             // 邏輯釐清：
-            // 載入點目前的狀態是『載入第二頁』，OK去執行了，載入點也應該要轉換成『載入第三頁』，但因為我們高速轉動頁，導致這個載入點轉換前又被我們碰到
-            // 第二頁因此重複加載，所以1.載入點轉換成正確頁面前，載入點都要失效 
+            // 載入點目前的狀態是『載入第二頁』，OK去執行了，載入點也應該要轉換成『載入第三頁』，
+            // 但因為我們高速轉動頁，導致這個載入點轉換前又被我們碰到
+            // 第二頁因此重複加載，問題出在這裡，所以『載入點轉換成正確頁面前，載入點偵測效果都要失效』
         }
 
         //觀察點清空後，渲染資料
@@ -97,7 +95,7 @@ let handle_nextPage=(nextPage,keyword)=>{
         entries.forEach(entry => {
             if (entry.isIntersecting){   
                 
-                current_observer.unobserve(detection_point); // 雖然確定接觸到了，但在載入資料前，先刪除所有接觸點
+                // 雖然確定接觸到了，但在載入資料前，先刪除所有接觸點
                 current_observer.disconnect()   
                 // EX:page0時，觀察點會在『載入第一頁』的狀態，雖然確定接觸到了，但在載入第一頁資料前就先刪掉接觸點，好避免先載入資料
                 
