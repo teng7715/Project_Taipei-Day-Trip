@@ -1,0 +1,421 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+/*以下是header1的相關設定*/
+
+.header1_area{
+    width: 100%;
+    height: 54px;
+    background-color: #FFFFFF;
+}
+
+.header1_for_fixed{
+    width: 100%;
+    background-color: #FFFFFF;
+    position: fixed;
+    z-index: 2;
+}
+
+.header1_layout{
+    width: 1200px;
+    height: 54px;
+    margin-inline:auto;
+
+    display: flex;
+    align-items:center;
+    justify-content: space-between; /*用來將多餘的空間平分在每個子元素中間，因為我們子元素只有兩個，所以就是這兩個中間*/
+}
+
+.website_name{
+    flex:none;
+    width:150px;
+    line-height: 34px;
+
+    font-size: 30px;
+    font-weight: bold;
+    color:#448899;
+
+    text-decoration: none;
+}
+
+.header1_layout > nav{
+    height: 34px;
+}
+
+.header1_navbar{
+    display: flex;
+    list-style: none;
+}
+
+.header1_navbar > li{
+    color:#666666;
+    font-size: 16px;
+    padding: 10px;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+/*以下是header2，的相關設定*/
+
+.header2_layout{
+    width: 100%;
+    height: 320px;
+    position: relative;
+}
+
+.header2_layout> figure{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.header2_background_image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top; /*這邊需要補做筆記哈哈，之前太累了偷懶沒有寫，這次要補起來*/
+}
+
+.header2_content-layout{
+    width: 1200px;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    margin-inline:auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /*這邊不是輸入align-content 是因為我們的主軸已變成垂直線，主軸的致中是由justify-content處理*/
+}
+
+.header2_content-heading{
+    color: #F8F8F8;
+    font-size: 28px;
+    font-weight: bold; /*這段筆記可能也可以補上，反正其實這邊也可以輸入數值，normal 相當於 400 bold 相當於 700*/
+    text-shadow: 0px 0px 30px #AABBCC; /*這段筆記可能也可以補上，反正是用來設置文字的陰影*/
+    padding: 10px 10px 15px 10px;
+    
+}
+
+.header2_content-subheading{
+    color: #F8F8F8;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0px 10px 25px 10px;
+}
+
+.header2_content-search{
+    padding: 0px 10px 0px 10px;
+    display: flex;
+}
+
+.header2_content-input{
+    width: 400px;
+    height: 46px;
+
+    border: 0px;    
+    box-shadow: 0px 0px 20px 0px  #AABBCC;
+    border-radius: 4px 0px 0px 4px;
+
+    box-sizing:border-box;
+    font-size: 16px;
+    font-weight: bold;
+    padding:15px 0px 15px 15px;
+
+    outline: none;
+}
+
+.header2_content-input::placeholder{
+    font-size: 16px;
+    font-weight: bold;
+    color: #757575;
+}
+
+.header2_content-search > button{
+    background-color:#448899 ;
+    width: 60px;
+    height: 46px;
+
+    border: 0px;
+    border-radius: 0px 4px 4px 0px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*以下是整個main區塊的相關設定*/
+
+.main_layout{
+    padding: 40px 0px 40px 0px;
+}
+
+/*以下是mrt navbar，的相關設定*/
+
+.navbar_layout{
+    width: 1200px;
+    height: 50px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-inline: auto;
+    padding-bottom: 20px;
+}
+
+.navbar_button{
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 47px;
+    height: 50px;
+    opacity: 0.5;
+}
+
+#left_arrow{
+    padding: 9px 0px 9px 15px;
+    box-sizing: border-box;
+}
+
+#right_arrow{
+    padding: 9px 15px 9px 0px;
+    box-sizing: border-box;
+}
+
+.navbar_button:hover{
+    opacity:1;
+}
+
+.navbar_list_container {
+    overflow: hidden; /* 這段筆記要記得補起來，反正就是自動隱藏超出的文字或圖片 */
+    padding: 0px 10px;
+}
+
+.navbar_list{
+    display: flex;
+    list-style: none;
+    height:100%;
+    transition: transform 1.2s ease-in-out;
+}
+
+.navbar_item{
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #666666;
+    padding: 5px 15px;
+    white-space: nowrap; /*這段筆記要記得補起來，反正就是讓字不要換行？？？*/
+}
+
+.navbar_item:hover{
+    color:#000000;
+}
+
+/*以下是景點區塊的相關設定*/
+
+.section_sheard{
+    width: 1200px;
+    margin-inline: auto;
+
+    box-sizing: border-box;
+    padding: 15px;
+
+    display: grid;
+    gap:30px;
+}
+
+.section_layout_for_one_to_four{
+    height: 272px;
+    grid-template: 1fr / 1fr 1fr 1fr 1fr;
+}
+
+.section_layout_for_one_to_eight{
+    height: 544px;
+    grid-template: 1fr 1fr / 1fr 1fr 1fr 1fr;
+}
+
+.section_layout_for_one_to_twelve{
+    height: 816px;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr 1fr;
+}
+
+article{ 
+    border: #E8E8E8 1px solid;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 242px;
+}
+
+.name_and_image_layout{
+    width: 100%;
+    height: 197px;
+    position: relative;
+}
+
+.name_and_image_layout > figure{
+    width: 100%;
+    height: 100%;
+}
+
+.attraction_image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+figcaption{
+    width: 100%;
+    height: 40px;
+
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+
+    /*這跟我上面那樣寫差在哪裡，感覺後續需要理解一下*/
+    /* background-color: #000000;
+    opacity: 0.6; */
+}
+
+.attraction_name{
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFFFFF;
+    padding: 10px;
+    height: 20px;
+    line-height:20px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 這三個拿來隱藏字的CSS記得也要好好做筆記 */
+}
+
+/**/
+
+.station_and_category{
+    display: flex;
+    height: 45px;
+    background-color: #FFFFFF;
+    padding: 10px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    color: #757575;
+}
+
+
+/*以下是footer區塊的相關設定*/
+
+footer{
+    width: 100%;
+    height: 104px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #757575;
+}
+
+footer > div{
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+@media(max-width:1200px){
+
+/*以下是header1的相關設定*/
+
+.header1_layout{
+    width: 100%;
+}
+
+.website_name{
+    padding: 10px;
+}
+
+/*以下是header2，的相關設定*/
+
+.header2_content-layout{
+    width: 100%;
+    padding-inline: 10px;
+    box-sizing: border-box;
+}
+
+.header2_content-input{
+    width: 300px; 
+}
+
+/*以下是mrt navbar，的相關設定*/
+
+.navbar_layout{
+    width: 600px;
+}
+
+/*以下是景點區塊的相關設定*/
+
+.section_sheard{
+    width: 600px;
+
+}
+
+.section_layout_for_one_to_eight,
+.section_layout_for_one_to_four,
+.section_layout_for_one_to_twelve{
+    height: 100%;
+    grid-template: 1fr 1fr / 1fr 1fr;
+}
+}
+
+
+@media(max-width:600px){
+
+/*以下是header2，的相關設定*/
+
+.header2_background_image{
+    object-position:left top; 
+}
+
+.header2_content-input{
+    width: 255px;
+}
+
+/*以下是mrt navbar，的相關設定*/
+
+.navbar_layout{
+    width: 360px;
+}
+
+/*以下是景點區塊的相關設定*/
+
+.section_sheard{
+    width: 352px;
+    gap:15px;
+}
+
+.section_layout_for_one_to_eight,
+.section_layout_for_one_to_four,
+.section_layout_for_one_to_twelve{
+    height: 100%;
+    grid-template: 1fr / 1fr;
+}
+
+article{
+    width: 322px;
+    height: 280px;
+}
+
+.name_and_image_layout{
+    height: 235px;
+}
+
+.station_and_category{
+    width: 100%;
+}
+}

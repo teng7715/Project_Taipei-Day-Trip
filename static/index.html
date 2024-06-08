@@ -3,9 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+  <link rel="stylesheet"type="text/css" href="/static/css/index.css"> 
+  <title>台北一日遊</title>
 </head>
 <body>
-  
+
+<header class="header1_area">
+  <div class="header1_for_fixed">
+    <div class="header1_layout">
+      <a class="website_name" href="/">台北一日遊</a>
+      <nav>
+          <ul class="header1_navbar">
+            <li>預定行程</li>
+            <li>登入/註冊</li>
+          </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<header class="header2_layout">
+    <figure>
+      <img src="/static/image/welcome_image.png" alt="Background_image_Taipei101" class="header2_background_image" />
+    </figure>
+
+    <div class="header2_content-layout">
+        <div class="header2_content-heading">輕鬆享受台北一日悠閒</div>
+        <div class="header2_content-subheading">探索每個角落，體驗城市的深度旅遊行程</div>
+
+        <div class="header2_content-search">
+            <input type="text" class="header2_content-input" placeholder="輸入景點名稱查詢" id="search">
+            <button id="search_button">
+              <img src="/static/image/icon_search.png" alt="search_icon"/>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="main_layout">
+
+  <nav class="navbar_layout">
+
+    <button class="navbar_button">
+      <img src="/static/image/icon_left_arrow.png" alt="left_arrow" id="left_arrow"/>
+    </button>
+
+    <div class="navbar_list_container">
+      <ul class="navbar_list" id="navbar_list"></ul>
+    </div>
+
+    <button class="navbar_button">
+      <img src="/static/image/icon_right_arrow.png" alt="right_arrow" id="right_arrow"/>
+    </button>
+
+  </nav>
+
+  <div class="detection_point"></div>
+
+</main>
+
+<footer>
+  <div>COPYRIGHT © 2021 台北一日遊</div>
+</footer>
+
+<script type="module" src="/static/js/get_mrts.js"></script>
+<script type="module" src="/static/js/index.js"></script>
+
 </body>
 </html>
