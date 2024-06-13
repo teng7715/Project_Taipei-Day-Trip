@@ -24,6 +24,11 @@ cnxpool=pooling.MySQLConnectionPool(
 	**config
 )
 
+db=cnxpool.get_connection()
+
+mycursor=db.cursor()
+
+#!!還是有連接中斷的問題喔嗚嗚,記得研究後修復
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -44,11 +49,7 @@ async def thankyou(request: Request):
 @app.get("/api/attractions")
 async def get_attractions(request:Request,page:int=0,keyword:str=None):
 
-	
-
 	try:
-		db=cnxpool.get_connection()
-		mycursor=db.cursor()
 
 		#先處理圖片URL的資料，再跑判斷式，因為無論有沒有keyword查詢，都需要用到
 		mycursor.execute("select attraction.id,url.image from url inner join attraction on attraction.id=url.attraction_id order by attraction.id")
@@ -101,8 +102,6 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 			mycursor.execute("select count(attraction.id) from attraction inner join station on attraction.station_id=station.id where attraction.name like %s or station.mrt like %s",(keyword_param,keyword_param))
 			attraction_count=mycursor.fetchone()[0]
 
-		
-
 
 		# page 0 是1-12    			limit 0,12 -->略過0筆資料後，取出12筆 
 		# page 1 是13-24   			limit 12,12 -->略過12筆資料後，取出12筆
@@ -144,19 +143,11 @@ async def get_attractions(request:Request,page:int=0,keyword:str=None):
 		}
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
-	finally:
-		mycursor.close()
-		db.close()
 
 @app.get("/api/attraction/{attractionId}")
 async def get_attraction(request:Request,attractionId:int):
 
-	
-
 	try:
-		db=cnxpool.get_connection()
-		mycursor=db.cursor()
-
 		mycursor.execute("select id from attraction")
 		attractions_id=mycursor.fetchall()
 		attractions_id_list=[ id[0] for id in attractions_id]
@@ -175,8 +166,6 @@ async def get_attraction(request:Request,attractionId:int):
 
 		mycursor.execute("select url.image from url inner join attraction on attraction.id=url.attraction_id where attraction.id=%s",(attractionId,))
 		image_datas=mycursor.fetchall()
-		
-
 		image_datas_list=[image[0] for image in image_datas]
 				
 		attraction_datas_list.append(image_datas_list)
@@ -196,21 +185,13 @@ async def get_attraction(request:Request,attractionId:int):
 		}
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
-	finally:
-		mycursor.close()
-		db.close()
 
 @app.get("/api/mrts") 
 async def get_mrts(request:Request):
 	
-
 	try:
-		db=cnxpool.get_connection()
-		mycursor=db.cursor()
-
 		mycursor.execute("select station.mrt,count(*) as num_station_with_attraction from attraction inner join station on attraction.station_id=station.id group by station.mrt order by num_station_with_attraction DESC")
 		data=mycursor.fetchall()  #data裡的內容為[('新北投', 6), ('關渡', 4), ('劍潭', 4),....]等等透過Mysql已幫忙排序的資料
-		
 
 		cleaned_data=[station[0] for station in data]
 
@@ -226,6 +207,3 @@ async def get_mrts(request:Request):
 		}
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 	
-	finally:
-		mycursor.close()
-		db.close()

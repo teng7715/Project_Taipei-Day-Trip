@@ -3,9 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet"type="text/css" href="/static/css/attraction.css"> 
   <title>Attraction</title>
 </head>
 <body>
+
+  <header class="header">
+    <div class="header--fixed">
+      <div class="header__layout">
+        <a class="header__title" href="/">台北一日遊</a>
+        <nav class="header__navbar">
+            <ul class="header__navbar-list">
+              <li class="header__navbar-item">預定行程</li>
+              <li class="header__navbar-item">登入/註冊</li>
+            </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <article>
+      <div class="article__image-and-booking">
+
+        <figure class="article__image-container" id="article__image-container">
+
+            <img src="/static/image/icon_left_arrow_for_image.png" class="article__image-arrow--left" id="left_arrow" alt="Left Arrow">
+            <img src="/static/image/icon_right_arrow_for_image.png" class="article__image-arrow--right" id="right_arrow" alt="Right Arrow">
+            
+            <div class="article__image-dots-container" id="article__image-dots-container"></div>
+            
+        </figure>
+
+        <section class="article__details">
+            <h1 class="article__title" id="attraction_name"></h1>
+            <p class="article__description"><span id="attraction_category"></span> at <span id="attraction_mrt"></span></p>
+
+            <div class="article__booking-container">
+              <h3 class="article__booking-title">訂購導覽行程</h3>
+              <p class="article__booking-description">以此景點為中心的一日行程，帶您探索城市角落故事</p>
+              <form>
+
+                <label class="article__form-label  article__form-label--date">
+                  
+                    <span class="article__form-text">選擇日期：</span> 
+                    <input type="date" name="date" required>
+
+                </label>
+
+                <label class="article__form-label article__form-label--time">
+
+                  <span class="article__form-text">選擇時間：</span>
+
+                  <input type="radio" id="morning" name="time" value="morning" checked>
+                  <label for="morning" class="article__form-radio-label">上半天</label>
+
+                  <input type="radio" id="afternoon" name="time" value="afternoon">
+                  <label for="afternoon" class="article__form-radio-label">下半天</label>
+
+                </label>
+              
+                <div class="article__form-fee" >
+                  <p class="article__fee">導覽費用：</p>
+                  <p class="article__fee-amount" id="fee_amount">新台幣 2000元</p>
+                </div>
+
+                <button class="article__form-button">開始預約行程</button>
+                
+              </form>
+            </div> 
+          </section>
+      </div>
+
+      <hr class="article__separator"/>
+
+      <section class="article__info">
+        <p class="article__info-text" id="attraction_description"></p>
   
+        <h3 class="article__info-title">景點地址：</h3>
+        <p class="article__info-address" id="attraction_address"></p>
+  
+        <h3 class="article__info-title">交通方式：</h3>
+        <p class="article__info-transportation" id="attraction_transport"></p>
+      </section>
+      
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__copyright">COPYRIGHT © 2024 台北一日遊</div>
+  </footer>
+
+  <script type="module" src="/static/js/attraction.js"></script>
+
 </body>
 </html>
