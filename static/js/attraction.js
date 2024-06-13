@@ -125,28 +125,6 @@ function initialize_slider(){
 }
 
 
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
 //>以下是針對選項不同，顯示不同價格的JS處理
 
 let time_radios=document.querySelectorAll('input[name="time"]');
