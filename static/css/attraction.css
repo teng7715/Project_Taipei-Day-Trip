@@ -1,0 +1,461 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+/* >以下是header相關設定 */
+
+.header{
+    width: 100%;
+    height: 54px;
+    position: relative;
+}
+
+.header--fixed{
+    width: 100%;
+    background-color: #FFFFFF;
+    position: fixed; 
+    z-index: 2;
+    box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.1);
+}
+
+.header__layout{
+    width: 1200px;
+    height: 54px;
+    margin-inline: auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__title{
+    flex:none;
+    width:150px;
+    line-height: 34px;
+
+    font-size: 30px;
+    font-weight: bold;
+    color:#448899;
+
+    text-decoration: none;
+}
+
+.header__navbar{
+    height: 34px;
+}
+
+.header__navbar-list{
+    display: flex;
+    list-style: none;
+}
+
+.header__navbar-item{
+    color:#666666;
+    font-size: 16px;
+    padding: 10px;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+/* >以下是main區塊的相關設定 */
+
+.main{
+    width: 1200px;
+    margin-inline: auto;
+    margin-block: 40px;
+}
+
+/* >以下是景點圖片和預訂區塊的設定 */
+/* >左半邊圖片區 */
+
+.article__image-and-booking{
+    display: flex;
+    width: 1200px;
+    height: 400px;
+    margin-bottom: 40px;
+    padding-inline: 15px;
+    box-sizing: border-box;
+}
+
+.article__image-container{
+    width: 540px;
+    height: 400px;
+    margin-right: 30px;
+    position: relative;
+}
+
+.article__image{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.article__image-arrow--left{
+    cursor: pointer;
+    position: absolute;
+    top:50%;
+    transform: translateY(-50%);
+    left: 10px;
+}
+
+.article__image-arrow--right{
+    cursor: pointer;
+    position: absolute;
+    top:50%;
+    transform: translateY(-50%);
+    right: 10px;
+}
+
+.article__image-dots-container{
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.article__image-dot{
+    cursor: pointer;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    opacity: 0.7;
+    transition: background-color 0.4s ease, border 0.4s ease
+}
+
+.article__image-dot:hover,
+.active{
+    background-color: #000000;
+    border: 1px solid #FFFFFF;
+    box-sizing: border-box;
+}
+
+
+/* >右半邊預約區 */
+
+.article__details{
+    flex: auto;
+}
+
+.article__title{
+    font-size: 24px;
+    font-weight: bold;
+    color: #666666;
+}
+
+.article__description{
+    font-size: 16px;
+    font-weight: 400;
+    color: #666666;
+    margin-block: 15px 20px;
+}
+
+.article__booking-container{
+    height: 302px;
+    background-color: #E8E8E8;
+    border-radius: 5px;
+    padding: 15px 20px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    row-gap:15px;
+}
+
+.article__booking-description{
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/*> 右半邊預約區，form表單，有關date的設定 */
+
+.article__form-label{
+    padding-bottom: 15px;
+}
+
+.article__form-label--date{
+    height: 35px;
+    display: flex;
+    align-items: center;
+}
+
+.article__form-text,.article__fee{
+    display: inline-block;
+    width: 81px;
+    margin-right: 5px;
+}
+
+input[type="date"]{ 
+    width: 193px;
+    height: 35px;
+    font-size: 16px;
+    border: 0px;
+    padding:5px 10px;
+    box-sizing: border-box;
+    outline: none;
+    position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator{
+    width: 24px;
+    height: 24px;
+    background:url(/static/image/icon_calendar.png)no-repeat ;
+    position: absolute; 
+    cursor: pointer;
+    top:5px;
+    right: 5px;
+}
+
+/*> 右半邊預約區，form表單，有關time的設定 */
+
+.article__form-label--time{
+    display: flex;
+    align-items: center;
+}
+
+input[type="radio"]{
+    /* >先將原本預設的點點設定隱藏 */
+    display: none;
+}
+
+.article__form-radio-label{
+    /* >針對選項文字的部分做指標化＋預留圓點圖片空間＋讓原點圖片可以以此為定位 */
+    cursor: pointer;
+    position: relative;
+    padding: 0px 8px 0px 31px;
+    margin-right: 5px;
+}
+
+.article__form-radio-label::before{
+    /* >在圓點符號前面，新增我們要客製化的原點尚未點擊的模樣跟位置設定 */
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    left: 5px;
+}
+
+input[type="radio"]:checked + .article__form-radio-label::before {
+    border: #FFFFFF 2px solid;
+    width: 18px;
+    height: 18px;
+    background-color: #448899;
+}
+
+/*> 右半邊預約區，form表單，有關費用跟送出按鈕的設定 */
+
+.article__form-fee{
+    display: flex;
+    padding-bottom: 25px;
+}
+
+.article__form-button{
+    width: 154px;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #448899;
+    border: 0px;
+    font-size: 18.5px;
+    color: #FFFFFF;
+    line-height: 16px;
+    cursor: pointer;
+}
+
+/* >分隔線設定 */
+
+.article__separator{
+    border: none; /* >移除默認的其他邊框設定 */
+    border-bottom: 1px solid #E8E8E8;
+}
+
+/* >景點細節資訊區塊的相關設定 */
+
+.article__info{
+    margin-top: 40px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.article__info-text{
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
+.article__info-title{
+    height: 32px;
+    line-height: 32px;
+}
+
+.article__info-address{
+    padding-bottom: 20px;
+    line-height: 24px;
+}
+
+.article__info-transportation{
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+/* >footer的相關設定 */
+
+.footer{
+    width: 100%;
+    height: 104px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #757575;
+}
+
+.footer__copyright{
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/*> 跟字體大小、顏色、粗細有關的一些共同設定 */
+
+.article__booking-title,
+.article__booking-description,
+.article__form-label,
+.article__fee,
+.article__fee-amount,
+.article__info-text,
+.article__info-title,
+.article__info-address,
+.article__info-transportation{
+    font-size: 16px;
+    color: #666666;
+}
+
+.article__booking-title,
+.article__form-label,
+.article__fee,
+.article__info-title{
+    font-weight: bold;
+}
+
+.article__booking-description,
+.article__form-radio-label{
+    font-weight: 400;
+}
+
+/* >RWD */
+
+@media(max-width:1215px){
+
+/* >以下是header相關設定 */
+
+.header__layout{
+    width: 100%;
+}
+
+.header__title{
+    padding: 10px 0px 10px 10px;
+}
+
+/* >以下是main區塊的相關設定 */
+
+.main{
+    width: 100%;
+    margin-block: 0px 40px;
+}
+
+/* >以下是景點圖片和預訂區塊的設定 */
+/* >左半邊圖片區 */
+
+.article__image-and-booking{
+    display: block;
+    width: 100%;
+    height: auto;
+    padding-inline: 0px;
+    
+}
+
+.article__image-container{
+    width: 85%;
+    height: 350px;
+    margin-right: 0px;
+    margin-inline:auto ;
+}
+
+
+/* >右半邊預約區 */
+
+.article__details{
+    width: 85% ;
+    height: 390px;
+    margin-inline:auto ;
+    margin-top: 20px;
+}
+
+.article__booking-container{
+    height: 300px;
+}
+
+/* >分隔線設定 */
+
+.article__separator{
+    width: 95%;
+    margin: auto;
+}
+
+/* >景點細節資訊區塊的相關設定 */
+
+.article__info{
+    margin-inline: 20px;
+}
+
+.article__info-text{
+    min-width: 330px;
+}
+
+}
+
+
+@media(max-width:600px){
+
+/* >手機模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
+body::-webkit-scrollbar{ 
+    display: none;
+}
+
+/* >以下是景點圖片和預訂區塊的設定 */
+/* >左半邊圖片區 */
+
+.article__image-container{
+    width: 100%;
+}
+
+.article__image{
+    border-radius: 0px;
+}
+
+/* >右半邊預約區 */
+
+.article__details{
+    min-width: 340px;
+    height: 390px;
+    padding-inline: 10px;
+}
+
+/* >景點細節資訊區塊的相關設定 */
+
+.article__info{
+    margin-inline: 10px;
+}
+
+}

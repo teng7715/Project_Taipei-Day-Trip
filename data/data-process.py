@@ -11,9 +11,6 @@ db=mysql.connector.connect(
 
 mycursor=db.cursor()
 
-#####分隔線#####
-
-
 # 1/ 開啟檔案
 with open("taipei-attractions.json","r",encoding="utf-8") as file:
     data=json.load(file)
