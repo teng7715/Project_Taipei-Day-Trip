@@ -69,31 +69,50 @@ def hash_password(password:str):
 
 # >函式：能將使用者輸入的明碼，和資料庫中的雜湊密碼，透過verify方法進行比較
 def verify_password(plain_password:str, hashed_password:str):
-	return pwd_context.verify(plain_password, hashed_password)
+	try: #!!DEBUG用(刪掉後記得把下面的內容縮排回來)
+
+		# !!為什麼AI解碼這一段這樣寫？？？ result=argon2.PasswordHasher().verify(stored_password, input_password)
+		result=pwd_context.verify(plain_password, hashed_password)
+
+		print(f"Password verification successful: {result}") #!!DEBUG用
+		return result
+
+	except Exception as e: #!!DEBUG用
+		print(f"Password verification failed with error: {e}") #!!DEBUG用
+		return False #!!DEBUG用
 
 
 # >函式：將使用者輸入的登入資料來與資料庫中的資料比對，進行身份驗證，如確定有此會員，就回傳使用者資料
 def authenticate_user(email:str,password:str):
+	try: #!!DEBUG用(刪掉後記得把下面的內容縮排回來)
 
-	db=cnxpool.get_connection()
-	mycursor=db.cursor()
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+		print(f"Database connected successfully.") #!!DEBUG用
 
-	mycursor.execute("select id,name,email,password from member where email=%s",(email,))
-	member_data=mycursor.fetchone()
+		mycursor.execute("select id,name,email,password from member where email=%s",(email,))
+		member_data=mycursor.fetchone()
 
-	mycursor.close()
-	db.close()
+		mycursor.close()
+		db.close()
 
-	if not member_data: # >如果資料庫沒有這筆帳號資料，直接回傳False
-		return False
+		print(f"Query result: {member_data}") #!!DEBUG用
 
-	authenticate_result=verify_password(password,member_data[3])
+		if not member_data: # >如果資料庫沒有這筆帳號資料，直接回傳False
+			return False
 
-	if not authenticate_result: # >如果密碼不一致，回傳False
-		return False
-	
-	return member_data  # >如果密碼一致，會回傳此帳號的相關資料 EX:(3, 'string', 'user@example.com', '$argon2id...')
+		authenticate_result=verify_password(password,member_data[3])
 
+		print(f"Password verification result: {authenticate_result}") #!!DEBUG用
+
+		if not authenticate_result: # >如果密碼不一致，回傳False
+			return False
+		
+		return member_data  # >如果密碼一致，會回傳此帳號的相關資料 EX:(3, 'string', 'user@example.com', '$argon2id...')
+
+	except Exception as e: #!!DEBUG用
+		print(f"Database operation failed with error: {e}") #!!DEBUG用
+		raise e   #!!DEBUG用
 
 # >函式：用來在使用者確定登入成功後，創建新TOKEN
 def create_access_token(data:dict):
@@ -112,7 +131,7 @@ def create_access_token(data:dict):
 
 
 
-#!!檢查到這裡哇哇！
+#++檢查到這裡哇哇！
 # >函式：將前端傳入的Request當中的JWT token解碼，取得會員名稱與信箱後，檢查是否有該值，如果沒有，或是token無效、過期等等，拋出401 Error
 def get_current_user(token:str): 
 
@@ -216,13 +235,15 @@ async def register(member:MemberCreate):
 @app.put("/api/user/auth")
 async def login(login_request:LoginRequest):
 
-	print(f"Email: {login_request.email} (type: {type(login_request.email)})") #!!DEBUG用
-	print(f"Password: {login_request.password} (type: {type(login_request.password)})")  #!!DEBUG用
-
 	try:
-			
+		
+		print(f"Email: {login_request.email} (type: {type(login_request.email)})") #!!DEBUG用
+		print(f"Password: {login_request.password} (type: {type(login_request.password)})")  #!!DEBUG用
+
 		# >將使用者輸入的資料送入驗證用的函式，並取得回傳值。驗證成功回傳使用者資訊，失敗則為None
 		authenticate_result=authenticate_user(str(login_request.email),str(login_request.password)) #!!DEBUG用，多加了str()
+
+		print(f"Authenticate result: {authenticate_result}") #!!DEBUG用
 
 		# >驗證失敗，回傳錯誤訊息給前端
 		if not authenticate_result:
@@ -242,6 +263,7 @@ async def login(login_request:LoginRequest):
 	
 
 	except Exception as e:
+		print(f"Exception occurred: {e}") #!!DEBUG用
 		error_response={
 			"error":True,
 			"message":str(e)
