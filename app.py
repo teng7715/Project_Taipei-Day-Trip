@@ -117,17 +117,22 @@ def authenticate_user(email:str,password:str):
 # >函式：用來在使用者確定登入成功後，創建新TOKEN
 def create_access_token(data:dict):
 
-	to_encode=data.copy() #?copy用法記得事後紀錄
-	
-	# > 過期日期設定成此刻UTC標準時間＋我們設定的過期期限七天
-	expire=datetime.utcnow()+timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
-	
-	# > 將過期時間放進去資料當中，好等等一起被加密處理
-	to_encode.update({"exp":expire})
+	try: #!!DEBUG用(刪掉後記得把下面的內容縮排回來)
+		to_encode=data.copy() #?copy用法記得事後紀錄
+		
+		# > 過期日期設定成此刻UTC標準時間＋我們設定的過期期限七天
+		expire=datetime.utcnow()+timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+		
+		# > 將過期時間放進去資料當中，好等等一起被加密處理
+		to_encode.update({"exp":expire})
 
-	token=jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
+		token=jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
 
-	return token
+		return token
+	
+	except Exception as e: #!!DEBUG用
+		print(f"Error in creating access token: {e}") #!!DEBUG用
+		raise e #!!DEBUG用
 
 
 
@@ -254,7 +259,11 @@ async def login(login_request:LoginRequest):
 			return JSONResponse(content=error_response,status_code=400,media_type="application/json; charset=utf-8")
 		
 		# >驗證成功，則將『使用者姓名』跟『使用者Email』資料，做為參數傳入產生Token的函式中去加密
-		token=create_access_token({"name":authenticate_result[1],"email":authenticate_result[2]}) 
+
+		user_data = {"name": str(authenticate_result[1]), "email": str(authenticate_result[2])} #!!DEBUG用
+        print(f"User data to encode in token: {user_data}") #!!DEBUG用
+
+		token=create_access_token({"name":str(authenticate_result[1]),"email":str(authenticate_result[2])})  #!!DEBUG用，多加了str()
 		
 		success_response={
 				"token":token
