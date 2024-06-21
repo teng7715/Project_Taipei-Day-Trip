@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet"type="text/css" href="/static/css/attraction.css"> 
-  <title>Attraction</title>
+  <link rel="stylesheet"type="text/css" href="/static/css/attraction.css">
+  <link rel="stylesheet"type="text/css" href="/static/css/login.css"> 
+  <title>景點介紹</title>
 </head>
 <body>
 
@@ -15,12 +16,14 @@
         <nav class="header__navbar">
             <ul class="header__navbar-list">
               <li class="header__navbar-item">預定行程</li>
-              <li class="header__navbar-item">登入/註冊</li>
+              <li class="header__navbar-item" id="login_or_signout"></li>
             </ul>
         </nav>
       </div>
     </div>
   </header>
+
+  <div class="login-popup"></div>
 
   <main class="main">
     <article>
@@ -95,6 +98,7 @@
   </footer>
 
   <script type="module" src="/static/js/attraction.js"></script>
+  <script src="/static/js/login.js"></script>
 
 </body>
 </html>

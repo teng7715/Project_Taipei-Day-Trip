@@ -191,7 +191,7 @@
     margin-right: 5px;
 }
 
-input[type="date"]{ 
+input[type="date"]{  /* ?CSS寫法input[type="date"]{}*/
     width: 193px;
     height: 35px;
     font-size: 16px;
@@ -200,12 +200,13 @@ input[type="date"]{
     box-sizing: border-box;
     outline: none;
     position: relative;
+    background-color: #FFFFFF;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator{
     width: 24px;
     height: 24px;
-    background:url(/static/image/icon_calendar.png)no-repeat ;
+    background:url(/static/image/icon_calendar.png)no-repeat ;  /* ?background系列的用法*/
     position: absolute; 
     cursor: pointer;
     top:5px;
@@ -232,9 +233,9 @@ input[type="radio"]{
     margin-right: 5px;
 }
 
-.article__form-radio-label::before{
+.article__form-radio-label::before{ /* ?CSS 的::before ::after */
     /* >在圓點符號前面，新增我們要客製化的原點尚未點擊的模樣跟位置設定 */
-    content: "";
+    content: "";  /* ?記得用::before 跟::after一定要有content */
     position: absolute;
     width: 22px;
     height: 22px;
@@ -243,7 +244,11 @@ input[type="radio"]{
     left: 5px;
 }
 
-input[type="radio"]:checked + .article__form-radio-label::before {
+/* ?:checked是CCSS偽類選擇器，表示任何處於選取狀態的radio、checkbox*/
+/* ?這邊邏輯我有點微卡，先記錄下來，目前我的理解是：
+/* ?被點擊到的點點，在他的相鄰的label標籤前，會套用以下設定 */
+/* ?此外，從開發者工具也可看出，他有繼承前面寫的::before的相關設定，但針對以下設定做抽換; */
+input[type="radio"]:checked + .article__form-radio-label::before { 
     border: #FFFFFF 2px solid;
     width: 18px;
     height: 18px;
@@ -357,6 +362,11 @@ input[type="radio"]:checked + .article__form-radio-label::before {
 
 @media(max-width:1215px){
 
+/* >手機+平板模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
+body::-webkit-scrollbar{ 
+    display: none;
+}
+
 /* >以下是header相關設定 */
 
 .header__layout{
@@ -428,10 +438,6 @@ input[type="radio"]:checked + .article__form-radio-label::before {
 
 @media(max-width:600px){
 
-/* >手機模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
-body::-webkit-scrollbar{ 
-    display: none;
-}
 
 /* >以下是景點圖片和預訂區塊的設定 */
 /* >左半邊圖片區 */

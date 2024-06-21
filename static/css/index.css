@@ -334,6 +334,11 @@ footer > div{
 
 @media(max-width:1200px){
 
+/* >手機+平板模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
+body::-webkit-scrollbar{ 
+    display: none;
+}
+
 /*以下是header1的相關設定*/
 
 .header1_layout{
