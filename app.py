@@ -216,10 +216,13 @@ async def register(member:MemberCreate):
 @app.put("/api/user/auth")
 async def login(login_request:LoginRequest):
 
+	print(f"Email: {login_request.email} (type: {type(login_request.email)})") #!!DEBUG用
+	print(f"Password: {login_request.password} (type: {type(login_request.password)})")  #!!DEBUG用
+
 	try:
 			
 		# >將使用者輸入的資料送入驗證用的函式，並取得回傳值。驗證成功回傳使用者資訊，失敗則為None
-		authenticate_result=authenticate_user(login_request.email,login_request.password)
+		authenticate_result=authenticate_user(str(login_request.email),str(login_request.password)) #!!DEBUG用，多加了str()
 
 		# >驗證失敗，回傳錯誤訊息給前端
 		if not authenticate_result:
