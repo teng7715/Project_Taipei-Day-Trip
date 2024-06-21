@@ -220,6 +220,7 @@ function send_register_data(){
 
 //>函式：連線登入API，且會檢查輸入欄位是否不為空的
 function send_login_data(){
+
     let login_email=document.querySelector("#login_email");
     let login_password=document.querySelector("#login_password");
     let login_message=document.querySelector("#login_message");
@@ -228,6 +229,9 @@ function send_login_data(){
         show_message(login_message,"所有欄位均為必填，請確認是否遺漏","popup__message--error")
         return;
     }
+
+    console.log(typeof login_email.value) //!!DEBUG用
+    console.log(typeof login_password.value) //!!DEBUG用
 
     fetch("/api/user/auth",{
         method:"PUT",
@@ -248,7 +252,7 @@ function send_login_data(){
         localStorage.setItem('token',data.token)
         show_message(login_message,"登入成功！\n(兩秒後將自動刷新頁面）","popup__message--success");
 
-        //> 在註冊成功後，自動刷新當前頁面
+        //> 在登入成功後，自動刷新當前頁面
         setTimeout(() => {  
             window.location.reload(); 
         }, 2000);

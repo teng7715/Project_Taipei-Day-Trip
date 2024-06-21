@@ -111,6 +111,8 @@ def create_access_token(data:dict):
 	return token
 
 
+
+#!!檢查到這裡哇哇！
 # >函式：將前端傳入的Request當中的JWT token解碼，取得會員名稱與信箱後，檢查是否有該值，如果沒有，或是token無效、過期等等，拋出401 Error
 def get_current_user(token:str): 
 
