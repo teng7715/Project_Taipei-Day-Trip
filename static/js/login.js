@@ -1,11 +1,3 @@
-//__後面上線要做的事情
-
-    //!!2. 在EC上下載所有需要用到的後端工具
-    //__4. 將地端的程式碼整理乾淨  
-    //!!這個做到一半！！！ 整剩下這個檔案＋ａｐｐ．ｐｙ，其他都整理檢查完了
-    //__5. 地端再次運作狀況
-    //__6. 將程式碼上傳，並部署到EC2跟檢查（真緊張）
-
 
 // >監聽事件：頁面載入後，透過連線的方式取得登入/註冊popup畫面的HTML內容，並在之後驗證使用者身份＋渲染畫面＋針對Popup建立監聽事件
 document.addEventListener('DOMContentLoaded',function (){
@@ -167,7 +159,6 @@ function show_message(target,message,css_color){
 
 
 //>函式：連線註冊API，且會檢查輸入欄位是否不為空的 
-//!!這個整理到一半！！！他下面的都還沒整理
 function send_register_data(){
 
     let register_name=document.querySelector("#register_name");
@@ -191,25 +182,27 @@ function send_register_data(){
         })
     })
     .then(response => {
-        if (response.status===500){throw new Error("API request failed")}
-        if (response.status===400){throw new Error("Has already been registered")}
+        if (response.status===400 || response.ok){return response.json()}; 
+
         if (response.status===422){throw new Error("Validation failed")}
-        if (response.ok){return response.json()} //!!這裡感覺可以在優化
+        else {throw new Error("API request failed")}
     })
     .then(data => {
-        show_message(register_message,"註冊成功，請重新登入！\n(兩秒後將自動刷新頁面）","popup__message--success");
-
-        //> 在註冊成功後，自動刷新當前頁面
-        setTimeout(() => {  
-            window.location.reload(); //??setTimeout用法做筆記
-        }, 2000);
+        if (data.error){
+            show_message(register_message,"此Email已註冊過，請改使用其他Email","popup__message--error");
+        }
+        if (data.ok){
+            show_message(register_message,"註冊成功，請重新登入！\n(兩秒後將自動刷新頁面）","popup__message--success");
+            
+            //> 在註冊成功後，自動刷新當前頁面
+            setTimeout(() => {  
+                window.location.reload(); //??setTimeout用法做筆記
+            }, 2000);
+        }
     })
     .catch(error => {
         if(error.message === "API request failed") {
             show_message(register_message,"無法連接伺服器，請稍後再試","popup__message--error");
-        }
-        if(error.message === "Has already been registered") {
-            show_message(register_message,"此Email已註冊過，請改使用其他Email","popup__message--error");
         }
         if(error.message === "Validation failed") {
             show_message(register_message,"註冊格式有誤，請注意電子郵件格式","popup__message--error");
@@ -218,20 +211,18 @@ function send_register_data(){
     })
 }
 
+
 //>函式：連線登入API，且會檢查輸入欄位是否不為空的
 function send_login_data(){
 
     let login_email=document.querySelector("#login_email");
-    let login_password=document.querySelector("#login_password");
+    let login_password=document.querySelector("#login_password"); 
     let login_message=document.querySelector("#login_message");
 
     if ( !login_email.value || !login_password.value){
         show_message(login_message,"所有欄位均為必填，請確認是否遺漏","popup__message--error")
         return;
     }
-
-    console.log(typeof login_email.value) //!!DEBUG用
-    console.log(typeof login_password.value) //!!DEBUG用
 
     fetch("/api/user/auth",{
         method:"PUT",
@@ -242,34 +233,32 @@ function send_login_data(){
         })
     })
     .then(response => {
-        if (response.status===500){throw new Error("API request failed")}
-        if (response.status===400){throw new Error("Email or password incorrect")} 
+        if (response.status===400 || response.ok){return response.json()};
+       
         if (response.status===422){throw new Error("Validation failed")}
-        if (response.ok){return response.json()} //!!這裡感覺可以在優化
+        else {throw new Error("API request failed")}
     })
     .then(data => {
-        
-        localStorage.setItem('token',data.token)
-        show_message(login_message,"登入成功！\n(兩秒後將自動刷新頁面）","popup__message--success");
+        if (data.error){
+            show_message(login_message,"電子郵件或密碼錯誤，請再次確認","popup__message--error");
+        }
+        if (data.token){
+            localStorage.setItem('token',data.token)
+            show_message(login_message,"登入成功！\n(兩秒後將自動刷新頁面）","popup__message--success");
 
-        //> 在登入成功後，自動刷新當前頁面
-        setTimeout(() => {  
-            window.location.reload(); 
-        }, 2000);
-
+            //> 在登入成功後，自動刷新當前頁面
+            setTimeout(() => {  
+                window.location.reload(); 
+            }, 2000);
+        }
     })
     .catch(error => {
-
         if(error.message === "API request failed") {
             show_message(login_message,"無法連接伺服器，請稍後再試","popup__message--error");
-        }
-        if(error.message === "Email or password incorrect") {
-            show_message(login_message,"電子郵件或密碼錯誤，請再次確認","popup__message--error");
         }
         if(error.message === "Validation failed") {
             show_message(login_message,"輸入格式有誤，請注意電子郵件格式","popup__message--error");
         }
         console.error(error)
     })
-
 }
