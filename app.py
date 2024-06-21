@@ -261,7 +261,7 @@ async def login(login_request:LoginRequest):
 		# >驗證成功，則將『使用者姓名』跟『使用者Email』資料，做為參數傳入產生Token的函式中去加密
 
 		user_data = {"name": str(authenticate_result[1]), "email": str(authenticate_result[2])} #!!DEBUG用
-        print(f"User data to encode in token: {user_data}") #!!DEBUG用
+		print(f"User data to encode in token: {user_data}") #!!DEBUG用
 
 		token=create_access_token({"name":str(authenticate_result[1]),"email":str(authenticate_result[2])})  #!!DEBUG用，多加了str()
 		
