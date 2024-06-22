@@ -1,3 +1,4 @@
+//?一整頁的程式碼邏輯再順一遍
 import {create_and_append} from "./get_attractions.js"
 
 
@@ -29,14 +30,14 @@ load_attraction_info(attraction_id)
 //>函式：單一景點資料中，除了圖片以外的資料，渲染到畫面上
 function update_basic_info(data){
 
-    let {name, category, mrt, description, address, transport}=data.data;
+    let {name, category, mrt, description, address, transport}=data.data; //>使用解構賦值
 
     document.querySelector("#attraction_name").innerText=name
     document.querySelector("#attraction_category").innerText=category
     document.querySelector("#attraction_mrt").innerText=mrt
     document.querySelector("#attraction_description").innerText=description
     document.querySelector("#attraction_address").innerText=address
-    document.querySelector("#attraction_transport").innerText=transport
+    document.querySelector("#attraction_transport").innerText=transport //?innerText
 
 }
 
@@ -89,7 +90,7 @@ function initialize_slider(){
 
     //>函式：點擊左邊箭頭，表示要回去看上一張圖，圖片值減一後，將此數值傳入處理幻燈片的函式
     function show_previous_page(){
-        page--
+        page--  //?符號先後的差異
         if (page<0){page=slides.length-1} //>如果page被點到小於0時，則將page轉跳回最後一張幻燈片的編號，做到照片循環
         show_slides(page)
     }
@@ -115,19 +116,19 @@ function initialize_slider(){
         })
 
         dots.forEach((dot)=>{
-            dot.classList.remove("active")
+            dot.classList.remove("active") //?classList的用法
         })
         
         slides[page].style.display="block";
         dots[page].classList.add("active");
-
+        //++這邊想想怎麼樣可以把圖片動畫加進去
     } 
 }
 
 
 //>以下是針對選項不同，顯示不同價格的JS處理
 
-let time_radios=document.querySelectorAll('input[name="time"]');
+let time_radios=document.querySelectorAll('input[name="time"]'); //?querySelector可以用input[name="time"]
 let fee_amount=document.querySelector("#fee_amount");
 let fees={
     morning:"新台幣 2000元",
@@ -137,7 +138,7 @@ let fees={
 
 //>事件與觸發函式：當選項改變(被點選時），觸發事件，並透過event.target找到被改變/點選的值後，對照該顯示的金額內容
 time_radios.forEach((radio)=>{
-    radio.addEventListener("change",(event)=>{
+    radio.addEventListener("change",(event)=>{ //>透過change事件來追蹤點點改變時，該呈現的說明文字
         let selected_time=event.target.value;
         fee_amount.innerText=fees[selected_time]
     })

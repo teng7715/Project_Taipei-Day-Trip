@@ -1,0 +1,143 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+.popup{
+    width: 340px;
+    height: auto;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    box-shadow: 0px 4px 20px 0px #AAAAAA;
+    
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 4;
+}
+
+.popup__header-bar{
+    width: 100%;
+    height: 10px;
+    background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.popup__login-section,
+.popup__register-section{
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.popup__close-icon{
+    position: absolute;
+    top:27px;
+    right: 17px;
+    cursor: pointer;
+}
+
+.popup__title{
+    font-size: 24px;
+    color: #666666;
+    font-weight: bold;
+    line-height: 27px;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.popup__form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.popup__input{
+    height: 47px;
+    background-color: #FFFFFF;
+    box-sizing: border-box;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.popup__input::placeholder{
+    font-size: 16px;
+    font-weight: 500;
+    color: #757575;
+}
+
+.popup__input:focus {
+    outline: none;
+    border-color: #448899;
+    box-shadow: 0 0 2px #448899;
+}
+
+.popup__button{
+    height: 47px;
+    background-color: #448899;
+    border-radius: 5px;
+    border: 0px;
+    cursor: pointer;
+
+    color: #FFFFFF;
+    font-size: 19px;
+    text-align: center;
+}
+
+.popup__message{
+    padding-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.popup__message--error{
+    color: red;
+}
+
+.popup__message--success{
+    color:rgb(14, 123, 14);
+}
+
+.popup__footer{
+    padding-top: 10px;
+    text-align: center;
+    color: #666666;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.popup__footer-link{
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.popup__footer-link:hover {
+    color: #448899;
+}
+
+.popup__overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    opacity: 25%;
+    z-index: 3;
+}
+
+
+/* >用來顯示or隱藏區塊的CSS */
+
+.popup--hidden {
+    display: none; 
+}
+
+
+

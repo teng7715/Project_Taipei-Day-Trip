@@ -36,7 +36,7 @@ let create_attraction_section=(data)=>{
    
 
     for (let attraction of data.data ){
-        // 會是attraction.id 所以網址要是/attraction/ attraction.id
+        
         let newArticle=create_and_append(newSection,"article","","")
 
         let newA=create_and_append(newArticle,"a","name_and_image_layout","")
@@ -62,7 +62,6 @@ let create_attraction_section=(data)=>{
 
 
 //>函式：用來建立連線＆判斷是否有下一頁，如果有，將下一頁頁碼透過參數，傳送出去（呼叫另一個函式）
-
 let get_attractions=(page,keyword="")=>{ 
 
     fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
