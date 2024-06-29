@@ -1,3 +1,5 @@
+# >故意分開寫，希望後面切分MVC好拆一點
+
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -5,13 +7,16 @@ import mysql.connector
 from mysql.connector import pooling
 import os
 
-from pydantic import BaseModel,EmailStr
+from pydantic import BaseModel,EmailStr,ValidationError
 from passlib.context import CryptContext
 import jwt
 from typing import Optional
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
+
+from typing import Literal
+from pydantic import ValidationError
 
 
 app=FastAPI()
@@ -38,6 +43,7 @@ SECRET_KEY=os.getenv("JWT_SECRET_KEY")
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_DAYS=7
 
+#####分隔線#####
 
 # >用來驗證用戶註冊資料的模型
 class MemberCreate(BaseModel):
@@ -45,13 +51,24 @@ class MemberCreate(BaseModel):
 	email:EmailStr
 	password:str
 
+
 # >用來驗證用戶登入資料的模型
 class LoginRequest(BaseModel):
     email:EmailStr
     password:str
 
+
+# >用來驗證前端傳來的Booking資料的模型：
+class Booking(BaseModel):
+	attractionId:int
+	date:str
+	time:Literal["morning","afternoon"]
+	price:int
+
 # __我目前省略沒建立JWT token 需要用的Pydantic Model，後續可以評估是不是其實應該寫才好
 
+
+#####分隔線#####
 
 # >創建一個密碼加密上下文實例
 pwd_context=CryptContext(schemes=["argon2"],deprecated="auto")
@@ -60,6 +77,8 @@ pwd_context=CryptContext(schemes=["argon2"],deprecated="auto")
 # >創建一個OAuth2PasswordBearer實例
 oauth2_schema=OAuth2PasswordBearer(tokenUrl="/api/user/auth")
 
+
+#####分隔線#####
 
 # >函式：能將密碼雜湊
 def hash_password(password:str):
@@ -104,6 +123,8 @@ def authenticate_user(email:str,password:str):
 		#? raise的用法記得去搞懂，以後再來真的使用
 
 
+#####分隔線#####
+
 # >函式：用來在使用者確定登入成功後，創建新TOKEN
 def create_access_token(data:dict):
 
@@ -124,13 +145,9 @@ def create_access_token(data:dict):
 		print(f"Error in creating access token:{e}")
 
 
+
 # >函式：將前端傳入的Request當中的JWT token解碼，取得會員名稱與信箱後，檢查是否有該值，如果沒有，或是token無效、過期等等，拋出401 Error
 def get_current_user(token:str): 
-
-	error_response={
-		"error":True,
-		"message":"無法驗證憑證"
-	}
 
 	try:
 
@@ -171,9 +188,11 @@ def authenticate_decode_jwt(name:str,email:str):
 		mycursor.close()
 		db.close()
 
+#####分隔線#####
+
 
 # >User API
-# >註冊一個新的會員
+# >『註冊』一個新的會員
 @app.post("/api/user")
 async def register(member:MemberCreate): 
 	# > 處理來自前端的註冊請求。這個函數接收MemberCreate類型的數據（包含使用者的名字、電子郵件和密碼）且會進行資料型態驗證
@@ -220,7 +239,7 @@ async def register(member:MemberCreate):
 		db.close()
 
 
-# >登入會員帳戶。驗證使用者帳號密碼，如確定有此會員，產生Token，並回傳
+# >『登入』會員帳戶。驗證使用者帳號密碼，如確定有此會員，產生Token，並回傳
 @app.put("/api/user/auth")
 async def login(login_request:LoginRequest):
 
@@ -253,7 +272,7 @@ async def login(login_request:LoginRequest):
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
 
-# >用來取得當前的會員資訊
+# >『取得當前的會員資訊』
 @app.get("/api/user/auth")
 async def check_auth(token:str=Depends(oauth2_schema)):
 
@@ -291,6 +310,253 @@ async def check_auth(token:str=Depends(oauth2_schema)):
 		# >如果沒有找到此會員的資料，回傳None
 		none_response={"data":None}
 		return JSONResponse(content=none_response,status_code=401,media_type="application/json; charset=utf-8")
+
+
+#####分隔線#####
+
+# >Booking API
+# >建立新的預定行程
+@app.post("/api/booking")
+async def create_booking(request:Request,token:str=Depends(oauth2_schema)): # >API接收使用者的Token跟預定資料
+
+	try:
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+		
+
+		# >2. 驗證前端傳來的Booking資料格式
+			# >驗證成功 -> 去下一步：開始將資料寫入資料庫
+			# >驗證失敗 -> 回傳錯誤訊息
+
+		booking_data=await request.json()
+
+		try:
+
+			# ?這串結合pydantic的用法，包含錯誤寫法記得記錄下來
+			# ?「字典解構」的用法做筆記！
+
+			booking=Booking(**booking_data) 
+
+		except ValidationError as e:
+			error_response={
+				"error": True,
+                "message": str(e)
+			}
+			return JSONResponse(content=error_response,status_code=400,media_type="application/json; charset=utf-8")
+
+
+		# >3. 透過Token中的信箱資訊，取得member_id後，檢查此會員在購物車表中，是否已經有資料
+			# >已有資料：將使用者的預約資料做Update!
+			# >沒有資料：將使用者的預約資料直接按照格式寫入資料庫
+		# >4. 寫入資料庫後，回傳對應的正確訊息
+		
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+
+		email=payload.get("email")
+		mycursor.execute("select id from member where email=%s",(email,))
+		member_id=mycursor.fetchone() # >透過Token中的信箱資訊，取得此會員的id
+
+		mycursor.execute("select * from cart where member_id=%s",(member_id[0],))
+		member_reserv=mycursor.fetchone() # >用會員id，取得此會員先前的預約資訊，沒有則是None
+
+		# > 如果先前有預約資料，更新資訊
+		if member_reserv:
+
+			update_query="""
+			update cart
+			set attraction_id=%s,
+				reservation_date=%s,
+				reservation_time=%s,
+    			price=%s
+			where member_id=%s;
+			"""
+
+			update_values=(
+				booking.attractionId,
+				booking.date,
+            	booking.time,
+            	booking.price,
+				member_id[0]
+			)
+
+			mycursor.execute(update_query,update_values)
+			db.commit()
+		
+		# >如果先前沒有預約資料，直接寫入
+		if not member_reserv:
+
+			insert_query="""
+			insert into cart(member_id,attraction_id,reservation_date,reservation_time,price) 
+			values(%s,%s,%s,%s,%s)
+			"""
+
+			booking_values=(
+				member_id[0],
+				booking.attractionId,
+				booking.date,
+				booking.time,
+				booking.price
+			)
+
+			mycursor.execute(insert_query,booking_values)
+			db.commit()
+
+		mycursor.close()
+		db.close()
+
+		success_response={
+			"ok":True
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+
+
+# >取得尚未確定下單的預定行程（也就是使用者點擊右上角預定行程時）
+@app.get("/api/booking") 
+async def get_booking(token:str=Depends(oauth2_schema)): 
+
+	try:
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+
+		# >2. 透過Token中的email資訊，取得使用者預定的景點資料並回傳
+
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+		email=payload.get("email")
+		insert_query="""
+		select
+			attraction.id,
+			attraction.name,
+			attraction.address,
+			(select image from url where url.attraction_id=attraction.id order by id limit 1),
+			cart.reservation_date,
+			cart.reservation_time,
+			cart.price
+		from cart
+		inner join member on cart.member_id=member.id
+		inner join attraction on cart.attraction_id=attraction.id
+		where member.email=%s;
+		"""
+		# ?子查詢的部分做筆記起來
+
+		mycursor.execute(insert_query,(email,))
+		booking_data=mycursor.fetchone() # >如果沒有預定資料，會是None(前端收到null)，有的話則是類似：(22, '袖珍博物館', '臺北市中山區建國北路1段96號B1', datetime.date(2024, 7, 1), 'morning', 2000, 'pic/11000762.jpg')
+
+		mycursor.close()
+		db.close()
+
+		# > 3.將取得到的購物車資料回傳給前端
+
+		# >如果購物車裡「沒有」資料，回傳None(前端會是null)
+		if not booking_data:
+			success_response={"data":None}
+			return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+
+		# >如果購物車裡「有」資料
+		success_response={
+			"data":{
+				"attraction":{
+					"id":booking_data[0],
+					"name":booking_data[1],
+					"address":booking_data[2],
+					"image":booking_data[3],
+				},
+				"date":booking_data[4].isoformat(),
+				"time":booking_data[5],
+				"price":booking_data[6]
+			}
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+
+
+# >刪除目前的預定行程
+@app.delete("/api/booking") 
+async def delete_booking(token:str=Depends(oauth2_schema)):
+	 
+	try:
+
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+
+
+		# >2. 透過Token中的email資訊，取得使用者預定的景點資料，並刪除
+		
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+		email=payload.get("email")
+		delete_query="""  
+		delete cart from cart   # ?這邊記得多看幾次，反正delete cart，表示要從cart表格中刪除資料，from cart表示操作的主要表格是 cart
+		inner join member on member.id=cart.member_id
+		where member.email=%s;
+		"""
+
+		mycursor.execute(delete_query,(email,))
+		db.commit()
+
+		mycursor.close()
+		db.close()
+
+		success_response={
+			"ok":True
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+
 
 
 # Static Pages (Never Modify Code in this Block)

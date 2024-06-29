@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet"type="text/css" href="/static/css/attraction.css">
-  <link rel="stylesheet"type="text/css" href="/static/css/login.css"> 
+  <link rel="stylesheet"type="text/css" href="/static/css/popup.css"> 
   <title>景點介紹</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
         <a class="header__title" href="/">台北一日遊</a>
         <nav class="header__navbar">
             <ul class="header__navbar-list">
-              <li class="header__navbar-item">預定行程</li>
+              <li class="header__navbar-item" id="booking_cart">預定行程</li>
               <li class="header__navbar-item" id="login_or_signout"></li>
             </ul>
         </nav>
@@ -23,7 +23,54 @@
     </div>
   </header>
 
-  <div class="login-popup"></div>
+<!-- __分隔！！！！！ -->
+
+<div class="popup popup--hidden" id="popup">
+
+  <div class="popup__header-bar"></div>
+
+  <div class="popup__login-section" id="popup_login_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">登入會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="login_email" type="text" placeholder="輸入電子信箱"/>
+          <input class="popup__input" id="login_password" type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="login_button">登入帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="login_message"></div>
+      <div class="popup__footer">
+          <span>還沒有帳戶？</span> 
+          <span class="popup__footer-link" id="login_footer_link">點此註冊</span>
+      </div>
+
+  </div>
+
+  <div class="popup__register-section popup--hidden" id="popup_register_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">註冊會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="register_name" type="text" placeholder="輸入姓名"/>
+          <input class="popup__input" id="register_email" type="email" placeholder="輸入電子郵件"/>
+          <input class="popup__input" id="register_password"type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="register_button">註冊新帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="register_message"></div>
+      <div class="popup__footer">
+          <span>已經有帳戶了？</span>  
+          <span class="popup__footer-link" id="register_footer_link">點此登入</span>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="popup__overlay popup--hidden" id="popup_overlay"></div> 
+
+
+<!-- __分隔！！！！！ -->
+
 
   <main class="main">
     <article>
@@ -45,12 +92,12 @@
             <div class="article__booking-container">
               <h3 class="article__booking-title">訂購導覽行程</h3>
               <p class="article__booking-description">以此景點為中心的一日行程，帶您探索城市角落故事</p>
-              <form>
+              <form id="booking_form"> 
 
                 <label class="article__form-label  article__form-label--date">
                   
                     <span class="article__form-text">選擇日期：</span> 
-                    <input type="date" name="date" required>
+                    <input type="date" name="date" required> 
 
                 </label>
 
@@ -71,7 +118,7 @@
                   <p class="article__fee-amount" id="fee_amount">新台幣 2000元</p>
                 </div>
 
-                <button class="article__form-button">開始預約行程</button>
+                <button class="article__form-button" id="sent_booking_button">開始預約行程</button>
                 
               </form>
             </div> 
@@ -97,8 +144,10 @@
     <div class="footer__copyright">COPYRIGHT © 2024 台北一日遊</div>
   </footer>
 
+  <script type="module" src="/static/js/popup.js"></script>
   <script type="module" src="/static/js/attraction.js"></script>
-  <script src="/static/js/login.js"></script>
+  
+
 
 </body>
 </html>
