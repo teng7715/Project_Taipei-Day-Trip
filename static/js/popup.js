@@ -1,19 +1,11 @@
 
-// >監聽事件：頁面載入後，透過連線的方式取得登入/註冊popup畫面的HTML內容，並在之後驗證使用者身份＋渲染畫面＋針對Popup建立監聽事件
+// >監聽事件：頁面載入後，針對Popup建立監聽事件
 document.addEventListener('DOMContentLoaded',function (){
 
-    fetch('/static/popup.html')
-    .then(response => response.text()) //?response.text() 會將取得到的回應，解析為一個字串
-    .then(data => {
-        document.querySelector('.login-popup').innerHTML = data;
-
-        //__Bug修復處理邏輯：
-        //__讓針對『Popup畫面的監聽事件』的函式呼叫，發生在Popup HTML都建構完之後，避免Uncaught TypeError
-        
+    if (document.querySelector("#popup")){
         setup_login_popup();
-    })
-    .catch(error => {console.error(error)})
-
+    }
+        
 });
 
 

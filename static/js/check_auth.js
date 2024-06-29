@@ -36,6 +36,7 @@ function navbar_check_auth(){
 
     // >如果驗證成功，按鈕渲染成登出之外，針對預定行程按鈕，點擊時會/booking頁面
     if (data.data){
+        
         render_signout_button()
 
         booking_cart.addEventListener("click",function(){

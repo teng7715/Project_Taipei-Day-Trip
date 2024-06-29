@@ -25,7 +25,54 @@
 
 <!--++目前首頁class名稱改成符合BEM的，只有以上Header的部分而已，以下都還沒-->
 
-<div class="login-popup"></div>
+<!-- __分隔！！！！！ -->
+
+<div class="popup popup--hidden" id="popup">
+
+  <div class="popup__header-bar"></div>
+
+  <div class="popup__login-section" id="popup_login_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">登入會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="login_email" type="text" placeholder="輸入電子信箱"/>
+          <input class="popup__input" id="login_password" type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="login_button">登入帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="login_message"></div>
+      <div class="popup__footer">
+          <span>還沒有帳戶？</span> 
+          <span class="popup__footer-link" id="login_footer_link">點此註冊</span>
+      </div>
+
+  </div>
+
+  <div class="popup__register-section popup--hidden" id="popup_register_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">註冊會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="register_name" type="text" placeholder="輸入姓名"/>
+          <input class="popup__input" id="register_email" type="email" placeholder="輸入電子郵件"/>
+          <input class="popup__input" id="register_password"type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="register_button">註冊新帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="register_message"></div>
+      <div class="popup__footer">
+          <span>已經有帳戶了？</span>  
+          <span class="popup__footer-link" id="register_footer_link">點此登入</span>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="popup__overlay popup--hidden" id="popup_overlay"></div> 
+
+
+<!-- __分隔！！！！！ -->
+
 
 <header class="header2_layout">
     <figure>

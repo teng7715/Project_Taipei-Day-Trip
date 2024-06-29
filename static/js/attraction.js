@@ -1,5 +1,3 @@
-//!!有有時右上角登入/註冊按鈕會出現Uncaught TypeError的BUG
-
 import { create_and_append } from "./get_attractions.js"
 import { fetch_auth,navbar_check_auth } from "./check_auth.js"
 import { booking_popup } from "./popup.js"
