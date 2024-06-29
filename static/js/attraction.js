@@ -1,5 +1,12 @@
-//?一整頁的程式碼邏輯再順一遍
-import {create_and_append} from "./get_attractions.js"
+//!!有有時右上角登入/註冊按鈕會出現Uncaught TypeError的BUG
+
+import { create_and_append } from "./get_attractions.js"
+import { fetch_auth,navbar_check_auth } from "./check_auth.js"
+import { booking_popup } from "./popup.js"
+
+
+// >頁面載入時，要檢查使用者狀態
+navbar_check_auth()
 
 
 //>函式：用來連線取得指定景點細節資料
@@ -144,3 +151,93 @@ time_radios.forEach((radio)=>{
     })
 })
 
+
+let sent_booking_button=document.querySelector("#sent_booking_button")
+
+// >監聽事件：當使用者點擊『開始預約行程按鈕時』，先去User API驗證是否合法登入，如果尚未登入或不合法，跳出popup，反之，則去執行建立booking資料的函式
+sent_booking_button.addEventListener("click",function(event){
+
+    event.preventDefault();
+
+    fetch_auth()
+    .then(data =>{
+
+        if (data.error){
+            booking_popup()
+        }
+
+        if (data.data){
+            create_booking_data()
+        }
+
+    })
+    .catch(error => console.log(error))
+})
+
+
+// >函式：整理以及建立要傳到後端的booking資料
+function create_booking_data(){
+
+    let booking_form=document.querySelector("#booking_form");
+
+    //?這段用法記得筆記起來
+    // >透過checkValidity()方法檢查表單中的任何一個元素是否有效（就是有沒有符合當初HTML的設定）
+    if (!booking_form.checkValidity()) { 
+        
+        // >如果沒有，就透過reportValidity()方法觸發表單的驗證，並顯示預設的錯誤訊息
+        booking_form.reportValidity();
+        return; // > 當表單無效時，return會阻止後續的程式碼執行
+    }
+
+
+    let date=document.querySelector("input[name='date']").value
+    let time=document.querySelector("input[name=time]:checked").value //?這邊input[name=time]:checked的用法記得做筆記
+    let fee_amount=document.querySelector("#fee_amount").textContent
+
+
+    let int_attraction_id=parseInt(attraction_id) // >原本的景點ID是字串格式，這邊轉換成數值
+
+
+    if (fee_amount==="新台幣 2000元"){ 
+        fee_amount=2000;
+    }
+    else if(fee_amount==="新台幣 2500元"){
+        fee_amount=2500;
+    }
+
+
+    let booking_data={
+        "attractionId": int_attraction_id,
+        "date": date,
+        "time": time,
+        "price":fee_amount
+    }
+
+    sent_booking_data(booking_data)
+
+}
+
+
+// >函式：POST方法發送連到Booking API
+function sent_booking_data(booking_data){
+
+    fetch("/api/booking",{
+        method:"POST",
+        headers:{
+            "Authorization":`Bearer ${localStorage.getItem("token")}`,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(booking_data)
+    })
+    .then(response => {
+        if(response.ok){return response.json()}
+        else {throw new Error("API request failed")}
+    })
+    .then(data => {
+        if (data.ok){
+            window.location.href = '/booking';
+        }
+    })
+    .catch(error => console.error(error))
+
+}

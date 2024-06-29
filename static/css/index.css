@@ -3,21 +3,21 @@
     padding: 0px;
 }
 
-/*>以下是header1的相關設定*/
+/*>以下是header的相關設定*/
 
-.header1_area{
+.header{
     width: 100%;
     height: 54px;
 }
 
-.header1_for_fixed{
+.header--fixed{
     width: 100%;
     background-color: #FFFFFF;
     position: fixed;
     z-index: 2;
 }
 
-.header1_layout{
+.header__layout{
     width: 1200px;
     height: 54px;
     margin-inline:auto;
@@ -27,7 +27,7 @@
     justify-content: space-between; /*用來將多餘的空間平分在每個子元素中間，因為我們子元素只有兩個，所以就是這兩個中間*/
 }
 
-.website_name{
+.header__title{
     flex:none;
     width:150px;
     line-height: 34px;
@@ -39,16 +39,16 @@
     text-decoration: none;
 }
 
-.header1_layout > nav{
+.header__navbar{
     height: 34px;
 }
 
-.header1_navbar{
+.header__navbar-list{
     display: flex;
     list-style: none;
 }
 
-.header1_navbar > li{
+.header__navbar-item{
     color:#666666;
     font-size: 16px;
     padding: 10px;
@@ -341,11 +341,11 @@ body::-webkit-scrollbar{
 
 /*以下是header1的相關設定*/
 
-.header1_layout{
+.header__layout{
     width: 100%;
 }
 
-.website_name{
+.header__title{
     padding: 10px;
 }
 

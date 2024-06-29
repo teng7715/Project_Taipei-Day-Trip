@@ -2,46 +2,37 @@
 // >監聽事件：頁面載入後，透過連線的方式取得登入/註冊popup畫面的HTML內容，並在之後驗證使用者身份＋渲染畫面＋針對Popup建立監聽事件
 document.addEventListener('DOMContentLoaded',function (){
 
-    fetch('/static/login.html')
+    fetch('/static/popup.html')
     .then(response => response.text()) //?response.text() 會將取得到的回應，解析為一個字串
     .then(data => {
         document.querySelector('.login-popup').innerHTML = data;
 
         //__Bug修復處理邏輯：
-        //__讓針對『身份驗證同時渲染畫面&Popup畫面的監聽事件』的函式呼叫，發生在Popup HTML都建構完之後，避免Uncaught TypeError
-
-        setup_popup();
-        check_auth()
+        //__讓針對『Popup畫面的監聽事件』的函式呼叫，發生在Popup HTML都建構完之後，避免Uncaught TypeError
+        
+        setup_login_popup();
     })
     .catch(error => {console.error(error)})
 
 });
 
 
-//>函式：驗證使用者身份，且針對驗證結果不同，決定要渲染登入/註冊，還是登出系統
-function check_auth(){
+// >函式：用在當點擊『預定行程』or 『開始預約行程』時，如果尚未登入，會跳出登入popup
+function booking_popup(){
 
-    fetch("/api/user/auth",{
-        method:"GET",
-        headers: {
-            "Authorization":`Bearer ${localStorage.getItem("token")}`
-        },
-    })
-    .then(response => {
-        if(response.status===401 || response.ok){return response.json()}
-        else {throw new Error("API request failed")}
-    })
-    .then(data => {
-        
-        if (data.error){
-            render_login_register_button()
-        }
+    let popup=document.querySelector("#popup");
+    let popup_overlay=document.querySelector("#popup_overlay");
+    let popup_login_section=document.querySelector("#popup_login_section");
+    let popup_register_section=document.querySelector("#popup_register_section");
 
-        if (data.data){
-            render_signout_button()
-        }
-    })
-    .catch(error => {console.error(error)})
+    popup.classList.remove("popup--hidden")
+    popup_overlay.classList.remove("popup--hidden")
+
+    //>除了上方寫到的讓popup跟overlay整體呈現出來之外，也透過下面兩行重置，讓每次點了都會先顯示登入區塊，而不會被之前點擊的結果給影響（EX:之前在註冊區塊關掉的，結果下次再點一次，變成先呈現註冊區塊）
+    popup_login_section.classList.remove("popup--hidden");
+    popup_register_section.classList.add("popup--hidden");
+
+    clean_input_data() //>清除之前輸入過的資料＋提示語狀態
 
 }
 
@@ -86,7 +77,7 @@ function render_signout_button(){
 
 
 //>函式：呼叫後就會建立popup畫面中，叉叉、送出鈕等等有關的監聽事件
-function setup_popup(){
+function setup_login_popup(){
 
     let popup=document.querySelector("#popup");
     let popup_login_section=document.querySelector("#popup_login_section");
@@ -262,3 +253,5 @@ function send_login_data(){
         console.error(error)
     })
 }
+
+export { render_login_register_button, render_signout_button, booking_popup }; 
