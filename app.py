@@ -7,7 +7,7 @@ import mysql.connector
 from mysql.connector import pooling
 import os
 
-from pydantic import BaseModel,EmailStr,ValidationError
+from pydantic import BaseModel, EmailStr, HttpUrl, ValidationError
 from passlib.context import CryptContext
 import jwt
 from typing import Optional
@@ -17,6 +17,10 @@ from jwt.exceptions import InvalidTokenError
 
 from typing import Literal
 from pydantic import ValidationError
+
+import random
+import httpx
+import asyncio
 
 
 app=FastAPI()
@@ -43,6 +47,9 @@ SECRET_KEY=os.getenv("JWT_SECRET_KEY")
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_DAYS=7
 
+Partner_Key="partner_w6UB4CacHBFM2NYpWiKQPtQuwdp3SnHazju0tZJLEO5G8H7ntvnRRrvo" 
+#++這邊到時候記得放到環境變數中，啊雲端也記得要放（哭）
+
 #####分隔線#####
 
 # >用來驗證用戶註冊資料的模型
@@ -64,6 +71,33 @@ class Booking(BaseModel):
 	date:str
 	time:Literal["morning","afternoon"]
 	price:int
+
+
+# >用來驗證前端傳來的ordeer資料的模型組們：
+class Attraction(BaseModel):
+	id:int
+	name:str
+	address:str
+	image:HttpUrl
+
+class Trip(BaseModel):
+	attraction:Attraction
+	date:str
+	time:Literal["morning","afternoon"]
+
+class Contact(BaseModel):
+	name:str
+	email:EmailStr
+	phone:str
+
+class Order(BaseModel):
+	price:int
+	trip:Trip
+	contact:Contact
+
+class OrderRequest(BaseModel):
+	prime:str
+	order:Order
 
 # __我目前省略沒建立JWT token 需要用的Pydantic Model，後續可以評估是不是其實應該寫才好
 
@@ -187,6 +221,20 @@ def authenticate_decode_jwt(name:str,email:str):
 	finally:
 		mycursor.close()
 		db.close()
+
+#####分隔線#####
+
+# >函式：透過 datetime 和 random 隨機產生訂單編號
+def generate_order_number():
+
+	now=datetime.now()
+	timestamp=int(now.timestamp()*1000)
+	random_number=random.randint(1000,9999)
+
+	order_number=f"{timestamp}{random_number}"
+
+	return order_number
+
 
 #####分隔線#####
 
@@ -557,6 +605,282 @@ async def delete_booking(token:str=Depends(oauth2_schema)):
 		}
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
 
+#####分隔線#####
+
+# >Order API
+# >根據預定行程中的資料，建立新的訂單，並串接第三方金流，完成付款程序
+@app.post("/api/orders") #!!正是參數裡面要寫：request:Request,token:str=Depends(oauth2_schema)
+async def create_order(request:Request,token:str=Depends(oauth2_schema)):
+
+	# ++以下為測試用的，記得刪掉
+	# token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiMTIzIiwiZW1haWwiOiJ0ZW5nNzcxNUBnbWFpbC5jb20iLCJleHAiOjE3MjA1MjY2OTJ9.A17X_Zcc0CDN0dz9PG4gtA2xEVbpsEPQTL2tlxypoXI"
+	# test_request_data={
+	# 	"prime":"test_3a2fb2b7e892b914a03c95dd4dd5dc7970c908df67a49527c0a648b2bc9",
+	# 	"order":{
+	# 		"price":2500,
+	# 		"trip":{
+	# 			"attraction":{
+	# 				"id":38,
+	# 				"name":"臺北市立美術館",
+	# 				"address":"臺北市中山區中山北路3段181號",
+	# 				"image":"https://www.travel.taipei/d_upload_ttn/sceneadmin/image/A0/B0/C0/D532/E822/F530/e168789d-2c35-4c18-af07-04185601e3da.jpg"
+	# 			},
+	# 			"date":"2024-07-06",
+	# 			"time":"afternoon"
+	# 		},
+	# 		"contact":{
+	# 			"name":"5555555555555",
+	# 			"email":"55555555555@gmail.com",
+	# 			"phone":"09555555"
+	# 		}
+	# 	}
+	# }
+	# ++以上為測試用的，記得刪掉
+
+	try:
+
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+
+
+		# >2. 驗證前端傳來的order資料格式
+			# >驗證成功 -> 去下一步：開始將資料寫入資料庫
+			# >驗證失敗 -> 回傳錯誤訊息
+
+		order_data=await request.json()  #!!正式時要改寫成：await request.json() 測試則是test_request_data
+
+		try:
+			order=OrderRequest(**order_data) 
+
+		except ValidationError as e:
+			error_response={
+				"error": True,
+                "message": str(e)
+			}
+			return JSONResponse(content=error_response,status_code=400,media_type="application/json; charset=utf-8")
+
+
+		# >3-1. 依據前端傳來的數據資料，在資料庫中建立一條未支付的訂單記錄
+		# !!3-2. 同時消除購物車中這筆資料
+
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+		email=payload.get("email")
+		mycursor.execute("select id from member where email=%s",(email,))
+		member_id=mycursor.fetchone()[0] # >透過Token中的信箱資訊，取得此會員的id
+
+		order_number=generate_order_number() # >透過generate_order_number取得生成的訂單編號
+
+		insert_query="""
+			insert into orders(
+				number, 		
+				member_id,		
+				attraction_id,
+				order_date,
+				order_time,
+				price,
+				contact_name,
+				contact_email,
+				contact_phone)
+			values(%s,%s,%s,%s,%s,%s,%s,%s,%s);
+			"""
+
+		order_values=(
+			order_number,
+			member_id,
+			order.order.trip.attraction.id,
+			order.order.trip.date,
+			order.order.trip.time,
+			order.order.price,
+			order.order.contact.name,
+			order.order.contact.email,
+			order.order.contact.phone,
+		)
+
+		delete_query="""
+			delete from cart
+			where member_id=%s and attraction_id=%s and reservation_date=%s and reservation_time=%s;
+		"""
+
+		delete_values=(
+			member_id,
+			order.order.trip.attraction.id,
+			order.order.trip.date,
+			order.order.trip.time
+		)
+
+		mycursor.execute(insert_query,order_values)
+		mycursor.execute(delete_query,delete_values)
+
+		db.commit()
+
+
+		# >4.在創建未支付的訂單記錄後，調用 TapPay Pay By Prime API，並提供必要的支付信息來進行信用卡支付。
+
+		tappay_url="https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+		tappay_headers={
+			"Content-Type":"application/json",
+			"x-api-key": Partner_Key
+		}
+
+		tappay_data={
+
+			"prime": order.prime,
+			"partner_key": Partner_Key,
+			"merchant_id": "teng7715_NCCC",
+			"details":"Taipei-Day-Trip-Order-Test",
+			"order_number":order_number,
+			"amount": order.order.price, 
+			"cardholder": {
+				"phone_number": order.order.contact.phone,
+				"name": order.order.contact.name,
+				"email": order.order.contact.email
+			}
+		}
+
+		async with httpx.AsyncClient() as client:
+			response=await client.post(tappay_url, headers=tappay_headers, json=tappay_data)
+			result=response.json()
+
+
+		# >5-1. 如果支付成功，將支付記錄保存到數據庫中，將訂單記錄標記為已支付，並將訂單號返回給前端。
+		# >5-2. 如果支付失敗，將支付記錄保存到數據庫中，保留訂單記錄為未支付以便未來操作，並將訂單號返回給前端。
+		
+
+		if result["status"]==0:
+			mycursor.execute("insert into payment(orders_number,result) values(%s,'success')",(order_number,))
+			db.commit()
+			payment_message="付款成功"
+		else:
+			mycursor.execute("insert into payment(orders_number,result) values(%s,'fail')",(order_number,))
+			db.commit()
+			payment_message="付款失敗"
+
+		mycursor.close()
+		db.close()
+
+		# >6. 按照格式，將訂單號碼回傳給前端
+
+		success_response={
+			"data": {
+				"number": order_number,
+				"payment": {
+				"status": result["status"],
+				"message": payment_message
+				}
+			}
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+		
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+		
+
+# >根據訂單編號取得訂單資訊，null 表示沒有資料
+@app.get("/api/order/{orderNumber}") #!!正是參數裡面要寫：request:Request,orderNumber:str,token:str=Depends(oauth2_schema)
+async def get_order(request:Request,orderNumber:str,token:str=Depends(oauth2_schema)):
+	try:
+
+		# # ++以下為測試用的，記得刪掉
+		# token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiMTIzIiwiZW1haWwiOiJ0ZW5nNzcxNUBnbWFpbC5jb20iLCJleHAiOjE3MjA1MjY2OTJ9.A17X_Zcc0CDN0dz9PG4gtA2xEVbpsEPQTL2tlxypoXI"
+
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+	
+		# >2. 根據訂單編號，向後端資料庫取得訂單資訊
+
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+		select_query="""
+		select
+			orders.number,
+			orders.price,
+			attraction.id, 
+			attraction.name,
+			attraction.address,
+			(select image from url where url.attraction_id=attraction.id order by id limit 1),
+			orders.order_date,
+			orders.order_time,
+			orders.contact_name,
+			orders.contact_email,
+			orders.contact_phone,
+			orders.paid
+		from orders inner join attraction on attraction.id=orders.attraction_id
+		where orders.number=%s
+		"""
+
+		mycursor.execute(select_query,(orderNumber,))
+		order_data=mycursor.fetchone()
+
+		mycursor.close()
+		db.close()
+
+		# >3.將取得到的訂單相關資料回傳給前端
+
+		# >如果「沒有」訂單相關資料，回傳None(前端會是null)
+		if not order_data:
+			success_response={"data":None}
+			return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+
+		# >如果「有」訂單相關資料
+		success_response={
+			"data": {
+				"number": order_data[0],
+				"price": order_data[1],
+				"trip": {
+				"attraction": {
+					"id": order_data[2],
+					"name": order_data[3],
+					"address": order_data[4],
+					"image": order_data[5]
+				},
+				"date": order_data[6].isoformat(),
+				"time": order_data[7]
+				},
+				"contact": {
+				"name": order_data[8],
+				"email": order_data[9],
+				"phone": order_data[10]
+				},
+				"status": order_data[11]
+			}
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+	
 
 
 # Static Pages (Never Modify Code in this Block)
@@ -572,6 +896,12 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+
+
+# __新增會員中心頁面
+@app.get("/membercentre", include_in_schema=False)
+async def membercentre(request: Request):
+	return FileResponse("./static/membercentre.html", media_type="text/html")
 
 
 # >Attraction API

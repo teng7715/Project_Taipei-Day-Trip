@@ -1,0 +1,158 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+/* >以下是header相關設定 */
+
+.header{
+    width: 100%;
+    height: 54px;
+    position: relative;
+}
+
+.header--fixed{
+    width: 100%;
+    background-color: #FFFFFF;
+    position: fixed; 
+    z-index: 2;
+    box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.1);
+}
+
+.header__layout{
+    width: 1200px;
+    height: 54px;
+    margin-inline: auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__title{
+    flex:none;
+    width:150px;
+    line-height: 34px;
+
+    font-size: 30px;
+    font-weight: bold;
+    color:#448899;
+
+    text-decoration: none;
+}
+
+.header__navbar{
+    height: 34px;
+}
+
+.header__navbar-list{
+    display: flex;
+    list-style: none;
+}
+
+.header__navbar-item{
+    color:#666666;
+    font-size: 16px;
+    padding: 10px;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+
+/* >以下是main的相關設定 */
+
+.main{
+    width: 1200px;
+    margin-inline: auto;
+    margin-block: 40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:30px;
+}
+
+/* >以下是頁面主要內容的相關設定 */
+
+.main__image-container{
+    width: 90px;
+    height: 90px;
+}
+
+.main__image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.main__success-message,
+.main__instructions{
+    text-align: center;
+    line-height: 1.5;
+}
+
+
+.main__order-number{
+    font-size: 30px;
+    font-weight: bold;
+    color: #666666;
+    text-decoration: underline;
+}
+
+
+/* >footer的相關設定 */
+
+.footer{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    background-color: #757575;
+}
+
+.footer__copyright{
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+    padding-top: 45px;
+}
+
+
+/* __一些文字樣式的共同設定 */
+
+.main__success-message,
+.main__instructions{
+    font-size: 17px;
+    color: #666666;
+    font-weight: 500;
+}
+
+
+/* >RWD */
+
+@media(max-width:1215px){
+
+    /* >手機+平板模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
+    body::-webkit-scrollbar{ 
+        display: none;
+    }
+    
+    
+    /* >以下是header相關設定 */
+    
+    .header__layout{
+        width: 100%;
+    }
+    
+    .header__title{
+        padding: 10px 0px 10px 10px;
+    }
+
+    /* >以下是main的相關設定 */
+
+    .main{
+        width: 90%;
+    }
+
+}

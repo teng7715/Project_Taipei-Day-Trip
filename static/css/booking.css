@@ -156,18 +156,19 @@
     padding-bottom: 20px;
 }
 
-.contact-info__form-group{
+.contact-info__form-group,
+.payment-info__form-group{
     padding-bottom: 15px;
 }
 
-.payment-info__form{
+.payment-info__label{ 
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    
 }
 
 .contact-info__input,
-.payment-info__input{
+.payment-info__input{  
     width: 200px;
     height: 38px;
     border-radius: 5px;
@@ -180,17 +181,20 @@
     color: black;
 }
 
+.payment-info__input{
+    margin-left: 5.33px;
+    display: inline-block;
+}
+
 .contact-info__input:focus,
-.payment-info__input:focus{
+.tappay-field-focus{  
     outline: none;
     border-color: #448899;
     box-shadow: 0 0 3px #448899;
 }
 
-.payment-info__input::placeholder{
-    font-size: 16px;
-    font-weight: 500;
-    color: #757575;
+.contact-info__input-error-message{
+    padding-bottom: 5px;
 }
 
 .contact-info__note{
@@ -291,7 +295,7 @@
 }
 
 
-/* !!垃圾桶圖示的問題可以再細節化 */
+/* ++垃圾桶圖示的問題可以再細節化 */
 /* >RWD */
 
 @media(max-width:1215px){
