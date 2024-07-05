@@ -23,7 +23,6 @@ let footer=document.querySelector("#footer");
 let booking_delete_icon=document.querySelector("#booking_delete_icon")
 
 
-//++這頁所有console.log記得刪掉！！！
 
 // >監聽事件：頁面一執行就發送連線到API驗證身份
 document.addEventListener("DOMContentLoaded",function(){
@@ -36,7 +35,12 @@ document.addEventListener("DOMContentLoaded",function(){
             window.location.href = '/';
         }
 
-        // >如果驗證成功，1.右上角顯示登出系統按鈕 2.點擊預定行程時，會導到booking頁 3.呼叫連線/api/booking的函式的同時，將user資料做為參數傳遞出去
+        // >如果驗證成功
+            // >1.右上角顯示登出系統按鈕 
+            // >2.點擊預定行程時，會導到booking頁 
+            // >3. 針對『 會員中心 』按鈕，點擊時會導流到/membercentre頁面 
+            // >4.呼叫連線/api/booking的函式的同時，將user資料做為參數傳遞出去
+
         if (data.data){
 
             render_signout_button()
@@ -45,6 +49,10 @@ document.addEventListener("DOMContentLoaded",function(){
 
             booking_cart.addEventListener("click",function(){
                 window.location.href='/booking'
+            })
+
+            member_centre.addEventListener("click",function(){
+                window.location.href='/membercentre'
             })
 
             get_booking_data(data)
@@ -103,13 +111,12 @@ async function get_booking_data(user) {
                     window.location.href = '/';
                 }
 
-                // >如果後端回傳的結果是200(已登入，且合法)，則將使用者預訂資料，以及全域的user變數傳入渲染的函式中
+                // >如果後端回傳的結果是200(已登入，且合法)，則將使用者預訂資料傳入渲染的函式中
                 if (data.data) {
 
                     // >使用者有購物車資料，就將會員資訊＋購物車資料拿去渲染
-                    console.log("這是從後端取回來的購物車資料",data.data)
-                    console.log("這是從後端取回來的使用者資料",user.data)
                     render_booking_data(data,user.data)
+
                 }
 
                 if (data.data === null){
@@ -143,7 +150,6 @@ function render_no_booking_data(user){
 // >函式：用來渲染『有』購物車資料狀態時的頁面
 function render_booking_data(data,user){
 
-
     booking_username.innerText=user.name
     contact_username.value=user.name
     contact_email.value=user.email
@@ -171,7 +177,6 @@ function render_booking_data(data,user){
 
 }
 
-/////分隔線//////
 
 // >TapPay：設定SDK參數，APP ID、Key、使用測試環境
 TPDirect.setupSDK(151749,'app_vwbMDFa5lqtwzV7hrcVukM6R9IoBOtqogmNIW9f5M0ZeMNVpM1mYpEaIIDl0','sandbox');
@@ -235,23 +240,15 @@ order_summary_button.addEventListener("click",function(){
     // >取得TapPay Fields的狀態，輸入都正確會回傳true，反之則是false
     let tappay_status=TPDirect.card.getTappayFieldsStatus().canGetPrime
 
-   
-    console.log("這是聯絡資訊的最終結果",check_contact_form_result)
-    console.log("這是TP的最終結果",tappay_status)
-
 
     TPDirect.card.getPrime((result) => {
 
         if (result.status !== 0 || check_contact_form_result === false) {
-            console.log("反正資料有誤或沒有填寫")
             return
         }
 
         // >確認聯絡資訊＋信用卡資訊都輸入完整後，就去取得
         if (check_contact_form_result && tappay_status){
-            console.log("資料都OK可以發送")
-            console.log("這邊到時候應該是要將prime發送到後端",result.card.prime)
-
 
             let time;
 
@@ -285,8 +282,6 @@ order_summary_button.addEventListener("click",function(){
                 }
             }
 
-            console.log("這是要傳送出去的資料",order_data)
-
 
             fetch("api/orders",{
                 method:"POST",
@@ -301,9 +296,6 @@ order_summary_button.addEventListener("click",function(){
                 else {throw new Error("API request failed")}
             })
             .then(data => {
-
-                console.log("這邊先單純將回傳的資料印出來，後續要回來寫喔！",data) 
-                console.log("這是取得的訂單編號",data.data.number)
 
                 window.location.href = `/thankyou?number=${data.data.number}`;
 

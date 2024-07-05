@@ -609,33 +609,8 @@ async def delete_booking(token:str=Depends(oauth2_schema)):
 
 # >Order API
 # >根據預定行程中的資料，建立新的訂單，並串接第三方金流，完成付款程序
-@app.post("/api/orders") #!!正是參數裡面要寫：request:Request,token:str=Depends(oauth2_schema)
+@app.post("/api/orders")
 async def create_order(request:Request,token:str=Depends(oauth2_schema)):
-
-	# ++以下為測試用的，記得刪掉
-	# token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiMTIzIiwiZW1haWwiOiJ0ZW5nNzcxNUBnbWFpbC5jb20iLCJleHAiOjE3MjA1MjY2OTJ9.A17X_Zcc0CDN0dz9PG4gtA2xEVbpsEPQTL2tlxypoXI"
-	# test_request_data={
-	# 	"prime":"test_3a2fb2b7e892b914a03c95dd4dd5dc7970c908df67a49527c0a648b2bc9",
-	# 	"order":{
-	# 		"price":2500,
-	# 		"trip":{
-	# 			"attraction":{
-	# 				"id":38,
-	# 				"name":"臺北市立美術館",
-	# 				"address":"臺北市中山區中山北路3段181號",
-	# 				"image":"https://www.travel.taipei/d_upload_ttn/sceneadmin/image/A0/B0/C0/D532/E822/F530/e168789d-2c35-4c18-af07-04185601e3da.jpg"
-	# 			},
-	# 			"date":"2024-07-06",
-	# 			"time":"afternoon"
-	# 		},
-	# 		"contact":{
-	# 			"name":"5555555555555",
-	# 			"email":"55555555555@gmail.com",
-	# 			"phone":"09555555"
-	# 		}
-	# 	}
-	# }
-	# ++以上為測試用的，記得刪掉
 
 	try:
 
@@ -657,7 +632,7 @@ async def create_order(request:Request,token:str=Depends(oauth2_schema)):
 			# >驗證成功 -> 去下一步：開始將資料寫入資料庫
 			# >驗證失敗 -> 回傳錯誤訊息
 
-		order_data=await request.json()  #!!正式時要改寫成：await request.json() 測試則是test_request_data
+		order_data=await request.json()
 
 		try:
 			order=OrderRequest(**order_data) 
@@ -671,7 +646,7 @@ async def create_order(request:Request,token:str=Depends(oauth2_schema)):
 
 
 		# >3-1. 依據前端傳來的數據資料，在資料庫中建立一條未支付的訂單記錄
-		# !!3-2. 同時消除購物車中這筆資料
+		# >3-2. 同時消除購物車中這筆資料
 
 		db=cnxpool.get_connection()
 		mycursor=db.cursor()
@@ -792,12 +767,10 @@ async def create_order(request:Request,token:str=Depends(oauth2_schema)):
 		
 
 # >根據訂單編號取得訂單資訊，null 表示沒有資料
-@app.get("/api/order/{orderNumber}") #!!正是參數裡面要寫：request:Request,orderNumber:str,token:str=Depends(oauth2_schema)
+@app.get("/api/order/{orderNumber}") 
 async def get_order(request:Request,orderNumber:str,token:str=Depends(oauth2_schema)):
 	try:
 
-		# # ++以下為測試用的，記得刪掉
-		# token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiMTIzIiwiZW1haWwiOiJ0ZW5nNzcxNUBnbWFpbC5jb20iLCJleHAiOjE3MjA1MjY2OTJ9.A17X_Zcc0CDN0dz9PG4gtA2xEVbpsEPQTL2tlxypoXI"
 
 		# >1. 先透過取得的Token驗證身份(確認是否登入)
 			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
@@ -880,7 +853,90 @@ async def get_order(request:Request,orderNumber:str,token:str=Depends(oauth2_sch
 			"message":str(e)
 		}
 		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
-	
+
+#####分隔線#####
+
+# >用來取得歷史訂單記錄
+@app.get("/api/membercentre")
+async def get_member_order_history(token:str=Depends(oauth2_schema)):
+
+	try:
+		# >1. 先透過取得的Token驗證身份(確認是否登入)
+			# >如果解碼成功：會得到回傳值：{"name":####,"email":####,"exp":###}
+			# >如果解碼失敗，回傳403 Error Message，表示沒有登入或登入已過期等等狀態
+
+		payload=get_current_user(token)
+
+		if payload is None:
+			error_response={
+				"error":True,
+				"message":"無法驗證憑證，請使用者重新登入"
+			}
+			return JSONResponse(content=error_response,status_code=403,media_type="application/json; charset=utf-8")
+
+		# >2. 透過Token中的email資訊，取得使用者，所有歷史訂單記錄並回傳
+
+		db=cnxpool.get_connection()
+		mycursor=db.cursor()
+
+		email=payload.get("email")
+
+		select_query="""
+		select
+			(select image from url where url.attraction_id=attraction.id order by id limit 1),
+			orders.number,
+			attraction.name,
+			attraction.address,
+			orders.order_date,
+			orders.order_time,
+			orders.contact_name,
+			orders.contact_email,
+			orders.contact_phone,
+			orders.price,
+			orders.paid
+		from orders 
+		inner join attraction on attraction.id=orders.attraction_id
+		inner join member on member.id = orders.member_id
+		where member.email=%s
+		order by orders.time DESC
+		"""
+
+		mycursor.execute(select_query,(email,))
+		order_history_data=mycursor.fetchall()
+
+		mycursor.close()
+		db.close()
+
+		# > 3.將取得到的歷史訂單資料，整理好後，回傳給前端
+
+		# >如果從來「沒有」訂單資料，回傳None(前端會是null)
+		if not order_history_data:
+			success_response={"data":None}
+			return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+
+		# >如果購物車裡「有」資料，做整理後，回傳給前端
+
+		keys=["image","order_number","attraction_name","address","date","time","contact_name","contact_email","contact_phone","price","status"]
+
+		cleaned_data=[dict(zip(keys, data)) for data in order_history_data]
+
+		for item in cleaned_data:
+			item["date"]=item["date"].isoformat()
+
+		success_response={ 
+			"data":cleaned_data
+		}
+		return JSONResponse(content=success_response,status_code=200,media_type="application/json; charset=utf-8")
+
+
+	except Exception as e:
+		error_response={
+			"error":True,
+			"message":str(e)
+		}
+		return JSONResponse(content=error_response,status_code=500,media_type="application/json; charset=utf-8")
+
 
 
 # Static Pages (Never Modify Code in this Block)
@@ -896,9 +952,7 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
-
-
-# __新增會員中心頁面
+# >新增會員中心頁面
 @app.get("/membercentre", include_in_schema=False)
 async def membercentre(request: Request):
 	return FileResponse("./static/membercentre.html", media_type="text/html")

@@ -22,9 +22,10 @@ function navbar_check_auth(){
     fetch_auth()
     .then(data => {
 
-    let booking_cart=document.querySelector("#booking_cart")
+    let booking_cart=document.querySelector("#booking_cart");
+    let member_centre=document.querySelector("#member_centre");
 
-    // >如果驗證失敗（尚未登入），1. 按鈕渲染成登入/註冊  2. 針對預定行程按鈕，點擊時只會跳出登入popup
+    // >如果驗證失敗（尚未登入），1. 按鈕渲染成登入/註冊  2. 針對『 預定行程＋會員中心 』按鈕，點擊時只會跳出登入popup 
     if (data.error){
 
         render_login_register_button()
@@ -32,15 +33,24 @@ function navbar_check_auth(){
         booking_cart.addEventListener("click",function(){
             booking_popup()
         })        
+
+        member_centre.addEventListener("click",function(){
+            booking_popup()
+        })        
+
     }
 
-    // >如果驗證成功，按鈕渲染成登出之外，針對預定行程按鈕，點擊時會/booking頁面
+    // >如果驗證成功， 1. 按鈕渲染成登出 2. 針對『 預定行程 』按鈕，點擊時會導流到/booking頁面 3. 針對『 會員中心 』按鈕，點擊時會導流到/membercentre頁面
     if (data.data){
         
         render_signout_button()
 
         booking_cart.addEventListener("click",function(){
             window.location.href='/booking'
+        })
+
+        member_centre.addEventListener("click",function(){
+            window.location.href='/membercentre'
         })
     }
 })

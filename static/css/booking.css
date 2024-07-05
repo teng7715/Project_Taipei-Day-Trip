@@ -362,10 +362,6 @@ body::-webkit-scrollbar{
 
 /* >以下是招呼語跟預定景點細節的相關設定 */
 
-.booking-detail{
-    width: 100%;
-}
-
 .booking-detail__content{
     display: block;
     padding: 30px 0px 0px 0px;

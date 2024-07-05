@@ -8,21 +8,35 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="header--fixed">
-          <div class="header__layout">
-            <a class="header__title" href="/">台北一日遊</a>
-            <nav class="header__navbar">
-                <ul class="header__navbar-list">
-                  <li class="header__navbar-item" id="booking_cart">預定行程</li>
-                  <li class="header__navbar-item" id="login_or_signout"></li>
-                </ul>
-            </nav>
-          </div>
+<header class="header">
+    <div class="header--fixed">
+        <div class="header__layout">
+        <a class="header__title" href="/">台北一日遊</a>
+        <nav class="header__navbar">
+            <ul class="header__navbar-list">
+                <li class="header__navbar-item" id="booking_cart">預定行程</li>
+                <li class="header__navbar-item" id="member_centre">會員中心</li> 
+                <li class="header__navbar-item" id="login_or_signout"></li>
+            </ul>
+        </nav>
         </div>
-      </header>
+    </div>
+</header>
 
+<main class="main">
+    
+    <section class="order-history" id="order_history">
+        <h2 class="order-history__title">歷史訂單紀錄</h2>
+        <p class="order-history__no-details hidden" id="order_history_no_info">目前查無任何訂單資料</p>
+    </section>
 
-      
+</main>
+
+<footer class="footer" id="footer">
+    <div class="footer__copyright">COPYRIGHT © 2024 台北一日遊</div>
+</footer>
+
+<script type="module" src="/static/js/membercentre.js"></script>
+
 </body>
 </html>
