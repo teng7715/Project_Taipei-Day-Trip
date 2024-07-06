@@ -1,0 +1,225 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+/* >以下是header相關設定 */
+
+.header{
+    width: 100%;
+    height: 54px;
+    position: relative;
+}
+
+.header--fixed{
+    width: 100%;
+    background-color: #FFFFFF;
+    position: fixed; 
+    z-index: 2;
+    box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.1);
+}
+
+.header__layout{
+    width: 1200px;
+    height: 54px;
+    margin-inline: auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__title{
+    flex:none;
+    width:150px;
+    line-height: 34px;
+
+    font-size: 30px;
+    font-weight: bold;
+    color:#448899;
+
+    text-decoration: none;
+}
+
+.header__navbar{
+    height: 34px;
+}
+
+.header__navbar-list{
+    display: flex;
+    list-style: none;
+}
+
+.header__navbar-item{
+    color:#666666;
+    font-size: 16px;
+    padding: 10px;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+/* >以下是main整個區塊的相關設定 */
+
+.main{
+    width: 1200px;
+    margin-inline: auto;
+    margin-block: 40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* >以下是order區塊的相關設定 */
+
+.order-history{
+    width: 1000px;
+}
+
+.order-history__title{
+    font-size: 19px;
+    font-weight: bold;
+    color: #666666;
+    padding-bottom: 30px;
+}
+
+.order-history__item{
+    display: flex;
+    align-items: center;
+    gap:30px;
+
+    margin-bottom: 30px;
+    padding: 25px 30px 20px 30px;
+
+    position: relative;
+}
+
+.order-history__item-decorate-bar{
+    border-radius: 2px; 
+    position: absolute;
+    left: 10px;
+    top: 25px;
+    bottom: 20px;
+    width: 5px;
+    background-color: #448899;
+}
+
+.order-history__item-image-container{
+    width: 320px;
+    height: 200px;
+}
+
+.order-history__item-image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+}
+
+.order-history__item-details-container{
+    flex:auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    color: #666666;
+    font-weight: bold;
+}
+
+.order-history__item-details-separator{
+    border: none; /* >移除默認的其他邊框設定 */
+    border-bottom: 2px solid #E8E8E8;
+}
+
+.order-history__no-details{
+    color: #666666;
+    font-size: 16px;
+}
+
+
+/* __用來隱藏的屬性 */
+
+.hidden{
+    display: none;
+}
+
+
+/* >footer的相關設定 */
+
+.footer{
+    width: 100%;
+    height: 104px;
+    display: flex;
+    justify-content: center;
+    background-color: #757575;
+}
+
+.footer--no-booking{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    background-color: #757575;
+}
+
+.footer__copyright{
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+    padding-top: 45px;
+}
+
+
+
+/* >RWD */
+
+@media(max-width:1215px){
+
+    /* >手機+平板模式時，隱藏上下滾動條，避免那15px的寬度影響畫面 */
+    body::-webkit-scrollbar{ 
+        display: none;
+    }
+    
+    /* >以下是header相關設定 */
+    
+    .header__layout{
+        width: 100%;
+    }
+    
+    .header__title{
+        padding: 10px 0px 10px 10px;
+    }
+
+    /* >以下是main整個區塊的相關設定 */
+
+    .main{
+        width: 100%;
+        margin-inline: 0px;
+        padding-inline: 10px;
+        box-sizing: border-box;
+    }
+
+    /* >以下是order區塊的相關設定 */
+
+    .order-history{
+        width: 90%;
+    }
+
+    .order-history__item{
+        display: block;
+    }
+
+    .order-history__item-image-container{
+        width: auto;
+        max-width: 500px;
+        height: 300px;
+    }
+
+    .order-history__item-details-container{
+        padding-top: 15px;
+    }
+
+}

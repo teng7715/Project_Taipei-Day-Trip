@@ -3,9 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You</title>
+  <link rel="stylesheet"type="text/css" href="/static/css/thankyou.css">
+  <link rel="stylesheet"type="text/css" href="/static/css/popup.css"> 
+  <title>感謝您的訂購！</title>
 </head>
 <body>
-  
+
+  <header class="header">
+    <div class="header--fixed">
+      <div class="header__layout">
+        <a class="header__title" href="/">台北一日遊</a>
+        <nav class="header__navbar">
+            <ul class="header__navbar-list">
+              <li class="header__navbar-item" id="booking_cart">預定行程</li>
+              <li class="header__navbar-item" id="member_centre">會員中心</li> 
+              <li class="header__navbar-item" id="login_or_signout"></li>
+            </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+<div class="popup popup--hidden" id="popup">
+
+  <div class="popup__header-bar"></div>
+
+  <div class="popup__login-section" id="popup_login_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">登入會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="login_email" type="text" placeholder="輸入電子信箱"/>
+          <input class="popup__input" id="login_password" type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="login_button">登入帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="login_message"></div>
+      <div class="popup__footer">
+          <span>還沒有帳戶？</span> 
+          <span class="popup__footer-link" id="login_footer_link">點此註冊</span>
+      </div>
+
+  </div>
+
+  <div class="popup__register-section popup--hidden" id="popup_register_section">
+
+      <img src="/static/image/icon_close.png" class="popup__close-icon"/>
+      <div class="popup__title">註冊會員帳號</div>
+      <form class="popup__form">
+          <input class="popup__input" id="register_name" type="text" placeholder="輸入姓名"/>
+          <input class="popup__input" id="register_email" type="email" placeholder="輸入電子郵件"/>
+          <input class="popup__input" id="register_password"type="password" placeholder="輸入密碼"/>
+          <button class="popup__button" id="register_button">註冊新帳戶</button>
+      </form>
+      <div class="popup__message popup--hidden" id="register_message"></div>
+      <div class="popup__footer">
+          <span>已經有帳戶了？</span>  
+          <span class="popup__footer-link" id="register_footer_link">點此登入</span>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="popup__overlay popup--hidden" id="popup_overlay"></div> 
+
+  <main class="main">
+    
+    <div class="main__image-container">
+      <img class="main__image" src="/static/image/checked_image.png" alt="Check Image">
+    </div>
+
+    <div class="main__success-message">
+      行程預定成功<br/>
+      您的訂單編號如下
+    </div>
+    <div class="main__order-number" id="order_number"></div>
+    <div class="main__instructions">請記住此編號，或到會員中心查詢歷史訂單</div>
+
+  </main>
+
+  <footer class="footer" id="footer">
+    <div class="footer__copyright">COPYRIGHT © 2024 台北一日遊</div>
+  </footer>
+
+  <script type="module" src="/static/js/thankyou.js"></script>
+
+
 </body>
 </html>

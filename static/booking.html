@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet"type="text/css" href="/static/css/booking.css">
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
   <title>預定行程</title>
 </head>
 <body>
@@ -15,6 +16,7 @@
         <nav class="header__navbar">
             <ul class="header__navbar-list">
               <li class="header__navbar-item" id="booking_cart">預定行程</li>
+              <li class="header__navbar-item" id="member_centre">會員中心</li> 
               <li class="header__navbar-item" id="login_or_signout"></li>
             </ul>
         </nav>
@@ -52,11 +54,11 @@
 
     <section class="contact-info">
         <h3 class="contact-info__title">您的聯絡資訊</h3>
-        <form>
+        <form id="contact_form">
 
           <div class="contact-info__form-group">
             <label class="contact-info__label">聯絡姓名：
-              <input class="contact-info__input" id="contact_username" type="text" required> 
+              <input class="contact-info__input" id="contact_username" type="text" required>
             </label>
           </div>
 
@@ -68,12 +70,16 @@
 
           <div class="contact-info__form-group">
             <label class="contact-info__label">手機號碼：
-              <input class="contact-info__input" type="tel" required>
+              <input class="contact-info__input" id="contact_phone" type="tel" required>
+              
             </label>
           </div>
 
         </form>
 
+        
+        <p class="contact-info__input-error-message" id="contact_email_error_message"></p>   
+        <p class="contact-info__input-error-message" id="contact_phone_error_message"></p>
         <p class="contact-info__note">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
 
     </section>
@@ -82,28 +88,29 @@
 
     <section class="payment-info">
         <h3 class="payment-info__title">信用卡付款資訊</h3>
-        <form class="payment-info__form">
+        <form>
 
-          <div>
-
+          <div class="payment-info__form-group">
             <label class="payment-info__label">卡片號碼：
-              <input class="payment-info__input" type="text" inputmode="numeric" placeholder="請輸入信用卡卡號" required>
+              <div class="payment-info__input" id="card_number"></div>
             </label>
           </div>
 
-          <div>
+          <div class="payment-info__form-group">
             <label class="payment-info__label">過期時間：
-              <input class="payment-info__input" type="text" inputmode="numeric" placeholder="MM / YY" required> 
+              <div class="payment-info__input" id="card_expiration_date"></div>
             </label>
           </div>
 
-          <div>
+          <div class="payment-info__form-group">
             <label class="payment-info__label">驗證密碼：
-              <input class="payment-info__input" type="text" inputmode="numeric" placeholder="CVV" required>
+              <div class="payment-info__input" id="card_ccv"></div>
             </label>
           </div>
 
         </form>
+
+        <p id="payment_info_error_message"></p>
 
     </section>
 
@@ -111,7 +118,7 @@
 
     <div class="order-summary">
       <p class="order-summary__total">總價：<span id="order_total">新台幣2000元</span></p>
-      <button class="order-summary__button">確認訂購並付款</button>
+      <button class="order-summary__button" id="order_summary_button">確認訂購並付款</button>
     </div>
 
   </main>
@@ -119,7 +126,6 @@
   <footer class="footer" id="footer">
     <div class="footer__copyright">COPYRIGHT © 2024 台北一日遊</div>
   </footer>
-
 
   <script type="module" src="/static/js/booking.js"></script>
 
