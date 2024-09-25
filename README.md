@@ -3,7 +3,7 @@ Taipei-Day-Trip is an e-commerce travel website that allows users to browse, sea
 
 <br/>
 
-## Outline(還沒真的改寫，可以評估到底要不要寫）
+## Outline
 
   - [Demo](#demo)
   - [Architecture](#architecture)
