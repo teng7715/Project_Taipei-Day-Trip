@@ -41,10 +41,10 @@ Taipei-Day-Trip is an e-commerce travel website that allows users to browse, sea
 
   | Names                    | Descriptions                                   |
   | -------                  | -------                                        |
-  | HTML / CSS / JavaScripts | Front-end language                             |
+  | HTML / CSS / JavaScript  | Front-end language                             |
   | RWD                      | Adaptable to screen sizes of different devices |
   | Python FastAPI           | Back-end framework                             |
-  | RESTful APIs             | API architecture                               |
+  | RESTful API              | API architecture                               |
   | MySQL                    | Database                                       |
   | JWT                      | Apply JWT for log-in system                    |
   | bcrypt                   | Password encryption                            |
